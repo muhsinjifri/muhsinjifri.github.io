@@ -1,6 +1,7 @@
 ---
 // EKS infrastructure metrics, application metrics, traces and logs go to Datadog; monitors warn first and alert
-// second; notifications go to Microsoft Teams and email. CloudWatch covers the AWS side; logs also go to Splunk.
+// second; notifications go to Microsoft Teams and email. CloudWatch covers the AWS side. Application logs were in
+// Splunk and now go to Datadog as well.
 const nodes = [0, 1, 2].map((i) => ({ y: 66 + i * 40 }));
 const channels = ['MS Teams', 'Email'].map((name, i) => ({ name, y: 72 + i * 50 }));
 
@@ -12,7 +13,7 @@ const metric = '378,168 398,162 414,165 430,150 446,152 462,128 478,131 494,108 
   class="diagram"
   viewBox="0 0 680 270"
   role="img"
-  aria-label="The Datadog agent runs on every EKS node and sends EKS infrastructure metrics, application and JMX metrics, APM traces and logs to Datadog. Fifteen-plus monitors have a warning threshold before the alert threshold and notify Microsoft Teams and email. AWS resources are covered by CloudWatch alarms and dashboards, and application logs also go to Splunk."
+  aria-label="The Datadog agent runs on every EKS node and sends EKS infrastructure metrics, application and JMX metrics, APM traces and logs to Datadog. Fifteen-plus monitors have a warning threshold before the alert threshold and notify Microsoft Teams and email. AWS resources are covered by CloudWatch alarms and dashboards, and application logs go to both Splunk and Datadog."
 >
   <defs>
     <pattern id="obs-grid" width="16" height="16" patternUnits="userSpaceOnUse">
@@ -85,5 +86,5 @@ const metric = '378,168 398,162 414,165 430,150 446,152 462,128 478,131 494,108 
   <text x="473" y="232" text-anchor="middle" class="dg-text dg-small">application logs</text>
   <line x1="534" y1="228" x2="566" y2="228" class="dg-line" marker-end="url(#obs-arrow)"></line>
   <rect x="568" y="212" width="102" height="32" class="dg-solid"></rect>
-  <text x="619" y="232" text-anchor="middle" class="dg-text dg-small dg-invert">Splunk</text>
+  <text x="619" y="232" text-anchor="middle" class="dg-text dg-small dg-invert">Splunk + Datadog</text>
 </svg>

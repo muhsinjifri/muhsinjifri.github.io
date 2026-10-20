@@ -100,7 +100,8 @@ import Observability from './diagrams/Observability.astro';
         cluster, with the agent on every node collecting EKS infrastructure metrics, application and JMX metrics, APM
         traces and logs, and built 15+ monitors on the signals that predict trouble: pod counts, node-group capacity and
         infrastructure health. Each one warns first and alerts second, routed to Microsoft Teams and email. CloudWatch
-        alarms and dashboards cover the AWS side, and logs also flow to Splunk.
+        alarms and dashboards cover the AWS side, and application logs that used to live only in Splunk now
+        land in Datadog too.
       </p>
       <p>
         That visibility pays off in root-cause work. When an integration between two internal systems lost its
