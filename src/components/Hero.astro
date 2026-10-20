@@ -28,7 +28,14 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
 });
 ---
 
-<section class="hero wrap" aria-labelledby="hero-title">
+<section class="hero wrap" data-font="f" aria-labelledby="hero-title">
+  <!-- Temporary while choosing the headline font: ?font=f or ?font=g -->
+  <script is:inline>
+    {
+      const f = new URLSearchParams(location.search).get('font');
+      if (f) document.currentScript.parentElement.dataset.font = f;
+    }
+  </script>
   <ul class="notes" aria-label="Quick facts">
     {notes.map(([a, b]) => <li><span>{a}</span><span>{b}</span></li>)}
   </ul>
@@ -266,11 +273,32 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     display: flex;
     flex-direction: column;
     padding-top: var(--space-5);
-    font-size: min(var(--step-display), 15.6cqi);
+    font-family: var(--tagline-font, var(--font-sans));
+    font-size: min(var(--tagline-max, var(--step-display)), var(--tagline-fit, 15.6cqi));
+    font-weight: var(--tagline-weight, 500);
+    line-height: var(--tagline-leading, 1);
+    letter-spacing: var(--tagline-tracking, var(--tracking-display));
+    text-transform: var(--tagline-case, none);
     white-space: nowrap;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: var(--tracking-display);
+  }
+
+  /* Headline font candidates. The fit value is 100 ÷ (widest line in em), so each one fills its column. */
+  .hero[data-font='f'] {
+    --tagline-font: 'Big Shoulders Variable', 'Arial Narrow', sans-serif;
+    --tagline-weight: 800;
+    --tagline-case: uppercase;
+    --tagline-tracking: 0.005em;
+    --tagline-leading: 0.88;
+    --tagline-fit: 16.4cqi;
+    --tagline-max: 8.5rem;
+  }
+
+  .hero[data-font='g'] {
+    --tagline-font: var(--font-display);
+    --tagline-weight: 400;
+    --tagline-tracking: -0.01em;
+    --tagline-leading: 0.98;
+    --tagline-fit: 11.8cqi;
   }
 
   .line--2 {
@@ -342,7 +370,7 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     }
   }
 
-  /* Phone: one column. The wheel comes first and the headline tucks under its lower handles. */
+  /* Phone: one column. The wheel comes first, the headline sits below it. */
   @media (max-width: 760px) {
     .hero {
       --stage: min(92vw, 520px);
@@ -362,12 +390,14 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       grid-column: 1;
       grid-row: 3;
       margin-right: 0;
-      margin-top: calc(var(--stage) * -0.1);
+    }
+
+    .hero {
+      --tagline-max: 100vw;
     }
 
     .tagline {
       padding-top: 0;
-      font-size: 15cqi;
     }
 
     .line--2 {
@@ -375,7 +405,9 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     }
 
     .compass {
-      left: -2%;
+      left: auto;
+      right: -1%;
+      bottom: -1%;
       width: 19%;
     }
   }
