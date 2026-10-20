@@ -92,15 +92,15 @@ import Observability from './diagrams/Observability.astro';
         { value: '15+', label: 'monitors, each with a warning level before the alert' },
         { value: '3+', label: 'dashboards across infrastructure and applications' },
       ]}
-      tags={['Datadog', 'APM', 'CloudWatch', 'OpenSearch', 'Slack · Teams']}
+      tags={['Datadog', 'APM', 'CloudWatch', 'Splunk', 'MS Teams']}
       caption="Signals in, warnings first, alerts second, straight to the team's channels."
     >
       <p>
         There were no early warnings: problems surfaced once something had already failed. I set up Datadog across the
-        cluster, with the agent on every node, APM and Java tracing, JMX metrics and logs, and built 15+ monitors on the
-        signals that predict trouble: pod counts, node-group capacity and infrastructure health. Each one warns first and
-        alerts second, routed to the team's Slack, Teams and email channels. CloudWatch alarms and dashboards cover the
-        AWS side, and application logs are searchable in OpenSearch.
+        cluster, with the agent on every node collecting EKS infrastructure metrics, application and JMX metrics, APM
+        traces and logs, and built 15+ monitors on the signals that predict trouble: pod counts, node-group capacity and
+        infrastructure health. Each one warns first and alerts second, routed to Microsoft Teams and email. CloudWatch
+        alarms and dashboards cover the AWS side, and logs also flow to Splunk.
       </p>
       <p>
         That visibility pays off in root-cause work. When an integration between two internal systems lost its
