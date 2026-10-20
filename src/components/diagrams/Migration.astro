@@ -1,5 +1,6 @@
 ---
-// Before: one service per EC2 instance. After: services as pods on Amazon EKS, Spot node groups, autoscaling.
+// Before: one service per EC2 instance. After: services as pods on Amazon EKS across an On-Demand and a Spot
+// node group, with the Cluster Autoscaler on the right scaling both.
 const vms = Array.from({ length: 8 }, (_, i) => ({ x: 20 + (i % 2) * 92, y: 52 + Math.floor(i / 2) * 50 }));
 const pods = (x0: number) =>
   Array.from({ length: 9 }, (_, i) => ({ cx: x0 + 26 + (i % 3) * 34, cy: 112 + Math.floor(i / 3) * 28 }));
@@ -7,9 +8,9 @@ const pods = (x0: number) =>
 
 <svg
   class="diagram"
-  viewBox="0 0 680 300"
+  viewBox="0 0 760 300"
   role="img"
-  aria-label="Before: each service on its own EC2 instance running Tomcat. After: the services run as pods on an Amazon EKS cluster behind an Application Load Balancer, on Spot node groups scaled by the Cluster Autoscaler and HPA."
+  aria-label="Before: each service on its own EC2 instance running Tomcat. After: the services run as pods on an Amazon EKS cluster behind an Application Load Balancer, across one On-Demand and one Spot node group. The Cluster Autoscaler scales both node groups and HPA scales the pods."
 >
   <defs>
     <pattern id="mig-grid" width="16" height="16" patternUnits="userSpaceOnUse">
@@ -19,7 +20,7 @@ const pods = (x0: number) =>
       <path d="M0 0 L10 5 L0 10 Z" class="dg-arrowhead"></path>
     </marker>
   </defs>
-  <rect width="680" height="300" fill="url(#mig-grid)"></rect>
+  <rect width="760" height="300" fill="url(#mig-grid)"></rect>
 
   <text x="20" y="34" class="dg-text dg-strong">BEFORE · one service per EC2</text>
   {
@@ -39,21 +40,28 @@ const pods = (x0: number) =>
   <text x="257" y="168" text-anchor="middle" class="dg-text dg-small">Helm + Argo CD</text>
 
   <text x="320" y="34" class="dg-text dg-strong">AFTER · Amazon EKS</text>
-  <rect x="320" y="52" width="340" height="206" rx="16" class="dg-hot"></rect>
-  <rect x="452" y="42" width="76" height="22" class="dg-solid"></rect>
-  <text x="490" y="57" text-anchor="middle" class="dg-text dg-small dg-invert">ALB</text>
+  <rect x="320" y="52" width="324" height="206" rx="16" class="dg-hot"></rect>
+  <rect x="444" y="42" width="76" height="22" class="dg-solid"></rect>
+  <text x="482" y="57" text-anchor="middle" class="dg-text dg-small dg-invert">ALB</text>
 
-  <rect x="336" y="84" width="150" height="112" rx="8" class="dg-on-hot-line dg-dash"></rect>
-  <rect x="500" y="84" width="144" height="112" rx="8" class="dg-on-hot-line dg-dash"></rect>
+  <rect x="336" y="84" width="140" height="112" rx="8" class="dg-on-hot-line dg-dash"></rect>
+  <rect x="488" y="84" width="140" height="112" rx="8" class="dg-on-hot-line dg-dash"></rect>
   {pods(336).map((p) => <circle cx={p.cx} cy={p.cy} r="8" class="dg-on-hot-solid"></circle>)}
-  {pods(497).map((p) => <circle cx={p.cx} cy={p.cy} r="8" class="dg-on-hot-solid"></circle>)}
-  <text x="336" y="212" class="dg-text dg-small dg-on-hot">node group · Spot</text>
-  <text x="500" y="212" class="dg-text dg-small dg-on-hot">node group · Spot</text>
-  <text x="336" y="240" class="dg-text dg-small dg-on-hot">Cluster Autoscaler · HPA · probes · EFS</text>
+  {pods(488).map((p) => <circle cx={p.cx} cy={p.cy} r="8" class="dg-on-hot-solid"></circle>)}
+  <text x="336" y="212" class="dg-text dg-small dg-on-hot">node group · On-Demand</text>
+  <text x="488" y="212" class="dg-text dg-small dg-on-hot">node group · Spot</text>
+  <text x="336" y="240" class="dg-text dg-small dg-on-hot">HPA · probes · EFS storage</text>
 
-  <line x1="20" y1="282" x2="660" y2="282" class="dg-line dg-thin"></line>
+  <rect x="666" y="106" width="84" height="58" class="dg-box"></rect>
+  <text x="708" y="130" text-anchor="middle" class="dg-text dg-small dg-strong">Cluster</text>
+  <text x="708" y="144" text-anchor="middle" class="dg-text dg-small dg-strong">Autoscaler</text>
+  <line x1="664" y1="135" x2="632" y2="135" class="dg-line dg-dash" marker-end="url(#mig-arrow)"></line>
+  <text x="708" y="182" text-anchor="middle" class="dg-text dg-small dg-muted">scales both</text>
+  <text x="708" y="195" text-anchor="middle" class="dg-text dg-small dg-muted">node groups</text>
+
+  <line x1="20" y1="282" x2="740" y2="282" class="dg-line dg-thin"></line>
   <line x1="20" y1="276" x2="20" y2="288" class="dg-line dg-thin"></line>
-  <line x1="660" y1="276" x2="660" y2="288" class="dg-line dg-thin"></line>
-  <rect x="290" y="274" width="100" height="16" fill="var(--paper)"></rect>
-  <text x="340" y="286" text-anchor="middle" class="dg-text dg-small">20 microservices</text>
+  <line x1="740" y1="276" x2="740" y2="288" class="dg-line dg-thin"></line>
+  <rect x="330" y="274" width="100" height="16" fill="var(--paper)"></rect>
+  <text x="380" y="286" text-anchor="middle" class="dg-text dg-small">20 microservices</text>
 </svg>

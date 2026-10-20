@@ -18,9 +18,9 @@ import Standards from './diagrams/Standards.astro';
       stats={[
         { value: '75%', label: 'lower compute cost after the move' },
         { value: '20', label: 'services containerised and migrated' },
-        { value: '15', label: 'engineers I was the technical contact for' },
+        { value: '15', label: 'engineers on the team I supported through the move' },
       ]}
-      tags={['Amazon EKS', 'Docker', 'Helm', 'Terraform', 'Spot', 'HPA']}
+      tags={['Amazon EKS', 'Docker', 'Helm', 'Terraform', 'Spot + On-Demand', 'Cluster Autoscaler', 'HPA']}
       caption="Before and after: one service per server, then one cluster for all of them."
     >
       <p>
@@ -30,7 +30,7 @@ import Standards from './diagrams/Standards.astro';
       </p>
       <p>
         I made the architecture calls on cluster layout, networking, deployment strategy and observability, and presented
-        the target design to leadership. Cost came down through Spot capacity, rightsizing from real usage, and
+        the target design to leadership. Cost came down through a mix of On-Demand and Spot node groups, rightsizing from real usage, and
         autoscaling with the Cluster Autoscaler and HPA. The work was recognised with an internal impact award.
       </p>
       <Migration slot="diagram" />
