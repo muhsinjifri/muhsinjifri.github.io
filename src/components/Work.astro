@@ -1,5 +1,6 @@
 ---
 // Selected work. Every claim here traces to master-profile.md in the resume workspace.
+// Confidentiality: never name the employer, internal systems or timelines on the site.
 import '../styles/diagram.css';
 import Section from './Section.astro';
 import CaseStudy from './CaseStudy.astro';
@@ -8,7 +9,7 @@ import Pipeline from './diagrams/Pipeline.astro';
 import Standards from './diagrams/Standards.astro';
 ---
 
-<Section id="work" number="02" title="Selected work" meta="IQVIA · 2024 to now">
+<Section id="work" number="02" title="Selected work" meta="Professional work">
   <div class="cases">
     <CaseStudy
       number="01"
@@ -23,14 +24,14 @@ import Standards from './diagrams/Standards.astro';
       caption="Before and after: one service per server, then one cluster for all of them."
     >
       <p>
-        When I joined, the services ran one per EC2 instance and a proof of concept for EKS was all that existed. I
-        became the main implementation owner: containerising every service, writing the Helm values, probes, storage and
-        networking, and wiring up the CI/CD and integrations around them.
+        The services ran one per EC2 instance, with only an early EKS proof of concept in place. I took ownership of the
+        implementation: containerising every service, writing the Helm values, probes, storage and networking, and
+        wiring up the CI/CD and integrations around them.
       </p>
       <p>
         I made the architecture calls on cluster layout, networking, deployment strategy and observability, and presented
         the target design to leadership. Cost came down through Spot capacity, rightsizing from real usage, and
-        autoscaling with the Cluster Autoscaler and HPA. The work earned an IQVIA Impact Award.
+        autoscaling with the Cluster Autoscaler and HPA. The work was recognised with an internal impact award.
       </p>
       <Migration slot="diagram" />
     </CaseStudy>
