@@ -8,7 +8,8 @@ const stages = [
   { title: 'Argo CD', sub: 'detects · syncs', hot: true },
 ].map((s, i) => ({ ...s, x: 10 + i * 134 }));
 
-const envs = ['dev', 'QA', 'UAT', 'prod', 'DR'].map((name, i) => ({ name, x: 10 + i * 134, prod: name === 'prod' }));
+// Environment names are all caps, the way they read in a release plan.
+const envs = ['DEV', 'QA', 'UAT', 'PROD', 'DR'].map((name, i) => ({ name, x: 10 + i * 134, prod: name === 'PROD' }));
 ---
 
 <svg
