@@ -1,0 +1,88 @@
+---
+// Signals from the cluster go to Datadog; monitors warn first and alert second; notifications go to team channels.
+// The AWS side is covered by CloudWatch, and application logs are searchable in OpenSearch.
+const nodes = [0, 1, 2].map((i) => ({ y: 66 + i * 40 }));
+const channels = ['Slack', 'Teams', 'Email'].map((name, i) => ({ name, y: 56 + i * 46 }));
+
+// A metric creeping up through the warning line, then the alert line.
+const metric = '378,168 398,162 414,165 430,150 446,152 462,128 478,131 494,108 508,96 520,84';
+---
+
+<svg
+  class="diagram"
+  viewBox="0 0 680 270"
+  role="img"
+  aria-label="The Datadog agent runs on every EKS node and sends metrics, JMX, APM traces and logs to Datadog. Fifteen-plus monitors have a warning threshold before the alert threshold and notify Slack, Teams and email. AWS resources are covered by CloudWatch alarms and dashboards, and application logs are searchable in OpenSearch."
+>
+  <defs>
+    <pattern id="obs-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" class="dg-gridline"></path>
+    </pattern>
+    <marker id="obs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" class="dg-arrowhead"></path>
+    </marker>
+  </defs>
+  <rect width="680" height="270" fill="url(#obs-grid)"></rect>
+
+  <!-- cluster -->
+  <rect x="10" y="30" width="150" height="160" class="dg-box"></rect>
+  <text x="22" y="50" class="dg-text dg-strong">EKS nodes</text>
+  {
+    nodes.map((n) => (
+      <g>
+        <rect x="22" y={n.y} width="126" height="30" class="dg-box dg-thin"></rect>
+        <rect x="30" y={n.y + 8} width="14" height="14" class="dg-solid"></rect>
+        <text x="52" y={n.y + 19} class="dg-text dg-small">Datadog agent</text>
+      </g>
+    ))
+  }
+  <line x1="162" y1="110" x2="186" y2="110" class="dg-line" marker-end="url(#obs-arrow)"></line>
+
+  <!-- datadog -->
+  <rect x="188" y="30" width="150" height="160" class="dg-hot"></rect>
+  <text x="200" y="50" class="dg-text dg-strong dg-on-hot">Datadog</text>
+  <text x="200" y="80" class="dg-text dg-small dg-on-hot">metrics · JMX</text>
+  <text x="200" y="100" class="dg-text dg-small dg-on-hot">APM · Java traces</text>
+  <text x="200" y="120" class="dg-text dg-small dg-on-hot">logs</text>
+  <line x1="200" y1="140" x2="326" y2="140" class="dg-on-hot-line"></line>
+  <text x="200" y="160" class="dg-text dg-small dg-on-hot">3+ dashboards</text>
+  <text x="200" y="176" class="dg-text dg-small dg-on-hot">infra · applications</text>
+  <line x1="340" y1="110" x2="364" y2="110" class="dg-line" marker-end="url(#obs-arrow)"></line>
+
+  <!-- monitors: warn before alert -->
+  <rect x="366" y="30" width="166" height="160" class="dg-box"></rect>
+  <text x="378" y="50" class="dg-text dg-strong">15+ monitors</text>
+  <line x1="378" y1="80" x2="378" y2="176" class="dg-line dg-thin"></line>
+  <line x1="378" y1="176" x2="522" y2="176" class="dg-line dg-thin"></line>
+  <line x1="378" y1="92" x2="522" y2="92" class="dg-line dg-thin"></line>
+  <line x1="378" y1="138" x2="522" y2="138" class="dg-line dg-thin dg-dash"></line>
+  <text x="383" y="87" class="dg-text dg-small">alert</text>
+  <text x="383" y="133" class="dg-text dg-small">warn</text>
+  <polyline points={metric} class="dg-line"></polyline>
+  <circle cx="462" cy="128" r="4" class="dg-hot"></circle>
+  <circle cx="508" cy="96" r="4" class="dg-solid"></circle>
+
+  <!-- channels -->
+  {
+    channels.map((c) => (
+      <g>
+        <path d={`M 534 110 H 548 V ${c.y + 15} H 566`} class="dg-line dg-thin" marker-end="url(#obs-arrow)"></path>
+        <rect x="568" y={c.y} width="102" height="30" class="dg-box"></rect>
+        <text x="619" y={c.y + 19} text-anchor="middle" class="dg-text dg-small">{c.name}</text>
+      </g>
+    ))
+  }
+
+  <!-- the AWS side and logs -->
+  <rect x="10" y="212" width="150" height="32" class="dg-box"></rect>
+  <text x="85" y="232" text-anchor="middle" class="dg-text dg-small">AWS resources</text>
+  <line x1="162" y1="228" x2="186" y2="228" class="dg-line" marker-end="url(#obs-arrow)"></line>
+  <rect x="188" y="212" width="196" height="32" class="dg-box"></rect>
+  <text x="286" y="232" text-anchor="middle" class="dg-text dg-small">CloudWatch alarms · dashboards</text>
+
+  <rect x="414" y="212" width="118" height="32" class="dg-box"></rect>
+  <text x="473" y="232" text-anchor="middle" class="dg-text dg-small">application logs</text>
+  <line x1="534" y1="228" x2="566" y2="228" class="dg-line" marker-end="url(#obs-arrow)"></line>
+  <rect x="568" y="212" width="102" height="32" class="dg-solid"></rect>
+  <text x="619" y="232" text-anchor="middle" class="dg-text dg-small dg-invert">OpenSearch</text>
+</svg>
