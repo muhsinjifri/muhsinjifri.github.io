@@ -1,0 +1,121 @@
+---
+const links = [
+  { href: '#work', label: 'Work' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#about', label: 'About' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header wrap">
+  <a class="name" href="/">Sayed Muhsin Jifri</a>
+  <nav aria-label="Main">
+    <ul>
+      {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+    </ul>
+  </nav>
+  <div class="actions">
+    <a class="resume" href="/resume.pdf">Résumé ↓</a>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.5"></circle>
+        <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const root = document.documentElement;
+
+  const current = () =>
+    root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+  button?.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch (_) {}
+  });
+</script>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-block: var(--space-5);
+  }
+
+  .name {
+    font-weight: 600;
+    font-size: var(--step-0);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  nav ul {
+    display: flex;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a,
+  .resume {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  .resume:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--vermilion);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .resume {
+    padding: var(--space-2) var(--space-3);
+    border: 1.5px solid var(--ink);
+  }
+
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      flex-wrap: wrap;
+      row-gap: var(--space-2);
+    }
+
+    nav {
+      order: 3;
+      width: 100%;
+    }
+
+    nav ul {
+      justify-content: space-between;
+    }
+  }
+</style>

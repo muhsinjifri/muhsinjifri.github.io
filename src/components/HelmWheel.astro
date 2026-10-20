@@ -1,0 +1,204 @@
+---
+/*
+  The ship's wheel, drawn in code so it stays sharp and follows the theme.
+  Centred on (0, 0) in a 600×600 box. Parts: a wooden rim with grain and brass trim,
+  eight tapered spokes, eight lathe-turned handles, and a brass hub.
+  The groups marked data-spin are turned by the hero's scroll script.
+*/
+const BASE_ROTATION = 14;
+const n = (v: number) => +v.toFixed(2);
+const angles = Array.from({ length: 8 }, (_, k) => k * 45);
+
+// Handle profile along +x: [distance from centre, half-width]. Collar, bead, belly, neck, grip, tip.
+const handleProfile: [number, number][] = [
+  [198, 7.5], [204, 7.5], [205, 10.5], [210, 10.5], [211.5, 6.5], [218, 7.5],
+  [224, 11], [232, 12.5], [240, 10.5], [246, 7], [250, 6.5], [253, 9.5],
+  [258, 11.5], [264, 12], [269, 10.5], [272.5, 7],
+];
+const top = handleProfile.map(([x, w]) => `${x} ${-w}`).join(' L ');
+const bottom = [...handleProfile].reverse().map(([x, w]) => `${x} ${w}`).join(' L ');
+const handlePath = `M ${top} A 7 7 0 0 1 272.5 7 L ${bottom} Z`;
+// A thin line of light along each handle, like varnish catching a lamp.
+const handleSheen = `M ${handleProfile.slice(1, -1).map(([x, w]) => `${x} ${n(-w * 0.5)}`).join(' L ')}`;
+
+// Spoke: thick at the hub, a turned collar midway, thinner at the rim.
+const spokeTop: [number, number][] = [[44, 10], [72, 8.5], [108, 7], [116, 9.5], [126, 9.5], [134, 6.5], [176, 6]];
+const spokePath = `M ${spokeTop.map(([x, w]) => `${x} ${-w}`).join(' L ')} L ${[...spokeTop].reverse().map(([x, w]) => `${x} ${w}`).join(' L ')} Z`;
+
+const rimPath =
+  'M -202 0 A 202 202 0 1 0 202 0 A 202 202 0 1 0 -202 0 Z ' +
+  'M -172 0 A 172 172 0 1 1 172 0 A 172 172 0 1 1 -172 0 Z';
+
+// Wood grain: broken concentric strokes. Fixed patterns so every build looks the same.
+const grain = [
+  { r: 176, dash: '60 9 22 5 90 12 34 7' },
+  { r: 180.5, dash: '28 6 75 10 18 4 52 9' },
+  { r: 185, dash: '95 8 40 6 26 11' },
+  { r: 190, dash: '33 5 64 9 21 7 80 6' },
+  { r: 194.5, dash: '70 11 25 6 44 8' },
+  { r: 198.5, dash: '18 7 58 5 37 10 66 8' },
+];
+
+// Joints between the rim's wooden sections, halfway between spokes.
+const joints = angles.map((a) => {
+  const t = ((a + 22.5) * Math.PI) / 180;
+  return { x1: n(173 * Math.cos(t)), y1: n(173 * Math.sin(t)), x2: n(201 * Math.cos(t)), y2: n(201 * Math.sin(t)) };
+});
+
+const bolts = angles.map((a) => {
+  const t = ((a + 22.5) * Math.PI) / 180;
+  return { cx: n(39 * Math.cos(t)), cy: n(39 * Math.sin(t)) };
+});
+---
+
+<svg class="helm" viewBox="-300 -300 600 600" role="img" aria-label="A ship's wheel: wooden rim, eight turned handles, brass hub">
+  <defs>
+    <g id="helm-geo">
+      <path d={rimPath} fill-rule="evenodd"></path>
+      {angles.map((a) => <path d={spokePath} transform={`rotate(${a})`}></path>)}
+      {angles.map((a) => <path d={handlePath} transform={`rotate(${a})`}></path>)}
+      <circle r="58"></circle>
+    </g>
+
+    <pattern id="helm-dots" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="1.35" class="hi-fill"></circle>
+    </pattern>
+
+    <!-- Light comes from the upper left and stays there while the wheel turns. -->
+    <linearGradient id="helm-light" x1="0.12" y1="0.08" x2="0.88" y2="0.92">
+      <stop offset="0" stop-color="#fff"></stop>
+      <stop offset="0.42" stop-color="#555"></stop>
+      <stop offset="0.6" stop-color="#000"></stop>
+    </linearGradient>
+    <mask id="helm-light-mask" maskUnits="userSpaceOnUse" x="-300" y="-300" width="600" height="600">
+      <rect x="-300" y="-300" width="600" height="600" fill="url(#helm-light)"></rect>
+    </mask>
+    <mask id="helm-shape-mask" maskUnits="userSpaceOnUse" x="-300" y="-300" width="600" height="600">
+      <g data-spin transform={`rotate(${BASE_ROTATION})`}><use href="#helm-geo" fill="#fff"></use></g>
+    </mask>
+
+    <radialGradient id="helm-brass" cx="0.38" cy="0.34" r="0.7">
+      <stop offset="0" class="brass-hi"></stop>
+      <stop offset="0.55" class="brass-mid"></stop>
+      <stop offset="1" class="brass-lo"></stop>
+    </radialGradient>
+
+    <filter id="helm-blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="9"></feGaussianBlur>
+    </filter>
+  </defs>
+
+  <!-- cast shadow on the paper -->
+  <g transform="translate(15 20)" class="shadow" filter="url(#helm-blur)">
+    <g data-spin transform={`rotate(${BASE_ROTATION})`}><use href="#helm-geo"></use></g>
+  </g>
+
+  <!-- body -->
+  <g data-spin transform={`rotate(${BASE_ROTATION})`}>
+    <use href="#helm-geo" class="body"></use>
+  </g>
+
+  <!-- halftone highlight, clipped to the wheel, lit from a fixed direction -->
+  <g mask="url(#helm-shape-mask)">
+    <rect x="-300" y="-300" width="600" height="600" fill="url(#helm-dots)" mask="url(#helm-light-mask)"></rect>
+  </g>
+
+  <!-- details that turn with the wheel -->
+  <g data-spin transform={`rotate(${BASE_ROTATION})`}>
+    <g class="grain">
+      {grain.map((g) => <circle r={g.r} stroke-dasharray={g.dash}></circle>)}
+    </g>
+    <g class="joints">
+      {joints.map((j) => <line x1={j.x1} y1={j.y1} x2={j.x2} y2={j.y2}></line>)}
+    </g>
+    <circle r="201.5" class="brass-line"></circle>
+    <circle r="173" class="brass-line thin"></circle>
+    <g class="sheen">
+      {angles.map((a) => <path d={handleSheen} transform={`rotate(${a})`}></path>)}
+    </g>
+    <circle r="47" class="hub-ring"></circle>
+    <circle r="31" fill="url(#helm-brass)"></circle>
+    {bolts.map((b) => <circle cx={b.cx} cy={b.cy} r="3.2" class="bolt"></circle>)}
+    <circle r="6" class="pin"></circle>
+  </g>
+</svg>
+
+<style>
+  .helm {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .body {
+    fill: var(--wheel);
+  }
+
+  .shadow {
+    fill: var(--shadow);
+    opacity: 0.26;
+  }
+
+  .hi-fill {
+    fill: var(--wheel-hi);
+  }
+
+  .grain circle {
+    fill: none;
+    stroke: var(--wheel-hi);
+    stroke-width: 1;
+    opacity: 0.16;
+  }
+
+  .joints line {
+    stroke: var(--wheel-hi);
+    stroke-width: 1.4;
+    opacity: 0.32;
+  }
+
+  .brass-line {
+    fill: none;
+    stroke: var(--mustard);
+    stroke-width: 2.6;
+  }
+
+  .brass-line.thin {
+    stroke-width: 1.4;
+    opacity: 0.75;
+  }
+
+  .sheen path {
+    fill: none;
+    stroke: var(--wheel-hi);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    opacity: 0.38;
+  }
+
+  .hub-ring {
+    fill: none;
+    stroke: var(--wheel-hi);
+    stroke-width: 2;
+    opacity: 0.4;
+  }
+
+  .brass-hi {
+    stop-color: var(--brass-hi);
+  }
+
+  .brass-mid {
+    stop-color: var(--mustard);
+  }
+
+  .brass-lo {
+    stop-color: var(--brass-lo);
+  }
+
+  .bolt {
+    fill: var(--mustard);
+  }
+
+  .pin {
+    fill: var(--wheel);
+  }
+</style>

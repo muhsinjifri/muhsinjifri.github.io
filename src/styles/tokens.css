@@ -1,0 +1,96 @@
+/*
+  Design tokens. Every colour, font, size and gap on the site comes from here.
+  Light is the default; dark is a warm "ink paper" version of the same palette.
+  Vermilion is for shapes only: it fails contrast as text on paper, even at display sizes.
+*/
+
+:root {
+  /* colour */
+  --paper: #efe6d6;
+  --ink: #151311;
+  --muted: #5e554c; /* captions, 5.9:1 on paper */
+  --vermilion: #f04e14;
+  --mustard: #e6a21c;
+  --brass-hi: #f6cb6a;
+  --brass-lo: #9c6a0e;
+  --line: #d9cdb8;
+  --grid: #e2d7c5;
+  --shadow: #151311;
+
+  /* the helm wheel flips with the theme so it never disappears into the ground */
+  --wheel: #1a1714;
+  --wheel-hi: var(--paper);
+
+  --grain-opacity: 0.26;
+  --grain-blend: multiply;
+
+  color-scheme: light;
+
+  /* type */
+  --font-sans: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-display: 'Bowlby One', 'Arial Black', sans-serif;
+
+  --step--2: 0.6875rem;  /* 11px micro labels */
+  --step--1: 0.8125rem;  /* 13px meta, tags */
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);   /* body */
+  --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.35rem + 1.1vw, 2.25rem);
+  --step-3: clamp(2.2rem, 1.6rem + 2.6vw, 3.5rem);
+  --step-display: clamp(3rem, 1.2rem + 7.2vw, 6.75rem);
+
+  --leading-tight: 1.02;
+  --leading-body: 1.55;
+  --tracking-display: -0.035em;
+  --tracking-micro: 0.06em;
+
+  /* space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+
+  /* layout */
+  --maxw: 1280px;
+  --measure: 66ch;
+  --gutter: clamp(16px, 4.5vw, 64px);
+  --rule: 2px solid var(--ink);
+  --hairline: 1px solid var(--ink);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #1a1714;
+    --ink: #ede4d3;
+    --muted: #a89c8c;
+    --vermilion: #f2602a;
+    --line: #3a332c;
+    --grid: #2a241f;
+    --shadow: #000;
+    --wheel: #ede4d3;
+    --wheel-hi: #1a1714;
+    --grain-opacity: 0.12;
+    --grain-blend: screen;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #1a1714;
+  --ink: #ede4d3;
+  --muted: #a89c8c;
+  --vermilion: #f2602a;
+  --line: #3a332c;
+  --grid: #2a241f;
+  --shadow: #000;
+  --wheel: #ede4d3;
+  --wheel-hi: #1a1714;
+  --grain-opacity: 0.12;
+  --grain-blend: screen;
+  color-scheme: dark;
+}

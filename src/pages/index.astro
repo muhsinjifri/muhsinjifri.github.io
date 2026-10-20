@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base
+  title="Sayed Muhsin Jifri · DevOps / Platform Engineer"
+  description="DevOps and platform engineer in Bengaluru. Amazon EKS, Terraform, Helm, Argo CD and release engineering."
+>
+  <Header />
+  <main id="main">
+    <Hero />
+
+    <!-- Skeleton: each section gets its real content in the content pass. -->
+    <Section id="work" number="02" title="Selected work">
+      <p class="pending">Case studies go here.</p>
+    </Section>
+
+    <Section id="projects" number="03" title="Projects">
+      <p class="pending">Projects go here.</p>
+    </Section>
+
+    <Section id="about" number="04" title="About">
+      <p class="pending">About, certifications and background go here.</p>
+    </Section>
+
+    <Section id="contact" number="05" title="Contact">
+      <ul class="contact">
+        <li><a href="mailto:muhsinjifri@gmail.com">muhsinjifri@gmail.com</a></li>
+        <li><a href="https://www.linkedin.com/in/muhsinjifri">LinkedIn</a></li>
+        <li><a href="https://github.com/muhsinjifri">GitHub</a></li>
+      </ul>
+    </Section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .pending {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step-1);
+  }
+</style>
