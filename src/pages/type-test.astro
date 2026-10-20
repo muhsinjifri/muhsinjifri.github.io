@@ -1,0 +1,89 @@
+---
+// Temporary page for choosing the headline font. Delete once a font is picked.
+import Base from '../layouts/Base.astro';
+
+const options = [
+  { id: 'A', name: 'Instrument Sans (current)', note: 'Neutral, clean. Safe but plain.', style: "font-family: 'Instrument Sans Variable'; font-weight: 500; letter-spacing: -0.035em" },
+  { id: 'B', name: 'Instrument Serif', note: 'Editorial, elegant, condensed serif. Feels like a magazine cover.', style: "font-family: 'Instrument Serif'; font-weight: 400; letter-spacing: -0.02em" },
+  { id: 'C', name: 'Instrument Sans + Serif italic', note: 'Mixed: sans for the line, italic serif for the key word. A common editorial move, warm and personal.', mixed: true },
+  { id: 'D', name: 'Bricolage Grotesque', note: 'Grotesque with quirks (ink traps, odd curves). Characterful, a bit handmade.', style: "font-family: 'Bricolage Grotesque'; font-weight: 700; font-variation-settings: 'opsz' 96, 'wdth' 85; letter-spacing: -0.04em" },
+  { id: 'E', name: 'Familjen Grotesk', note: 'Swiss-poster grotesque with a warmer, rounder voice.', style: "font-family: 'Familjen Grotesk'; font-weight: 600; letter-spacing: -0.04em" },
+  { id: 'F', name: 'Big Shoulders', note: 'Condensed industrial signage. Loud and engineered.', style: "font-family: 'Big Shoulders'; font-weight: 800; text-transform: uppercase; letter-spacing: 0" },
+  { id: 'G', name: 'Bowlby One', note: 'Chunky, cut-paper poster weight (closest to the Luz Cano reference).', style: "font-family: 'Bowlby One'; font-weight: 400; letter-spacing: -0.01em" },
+];
+---
+
+<Base title="Headline font test" description="Temporary font comparison">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@800&family=Bowlby+One&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,700&family=Familjen+Grotesk:wght@600&family=Instrument+Serif:ital@0;1&display=swap"
+  />
+  <main class="wrap">
+    <p class="intro mono">Headline font options. Same words, same size. Pick a letter.</p>
+    {
+      options.map((o) => (
+        <section class="opt">
+          <div class="label mono">
+            <strong>{o.id}</strong> · {o.name}
+            <span>{o.note}</span>
+          </div>
+          {o.mixed ? (
+            <p class="headline" style="font-family: 'Instrument Sans Variable'; font-weight: 500; letter-spacing: -0.035em">
+              Steady hands
+              <br />
+              on the <em style="font-family: 'Instrument Serif'; font-style: italic; font-weight: 400; letter-spacing: -0.01em">wheel.</em>
+            </p>
+          ) : (
+            <p class="headline" style={o.style}>
+              Steady hands
+              <br />
+              on the wheel.
+            </p>
+          )}
+        </section>
+      ))
+    }
+  </main>
+</Base>
+
+<style>
+  .intro {
+    padding-block: var(--space-6) var(--space-4);
+    font-size: var(--step--1);
+  }
+
+  .opt {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: center;
+    padding-block: var(--space-6);
+    border-top: var(--rule);
+  }
+
+  .label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+  }
+
+  .label strong {
+    font-size: var(--step-2);
+  }
+
+  .label span {
+    color: var(--muted);
+  }
+
+  .headline {
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    line-height: 1;
+  }
+
+  @media (max-width: 760px) {
+    .opt {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
