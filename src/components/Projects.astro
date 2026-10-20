@@ -1,0 +1,189 @@
+---
+// Projects outside the day job. Labels say exactly what each one was: freelance, personal, hackathon.
+// Confidentiality: no company, client or employer names, and no cost figures.
+import Section from './Section.astro';
+
+interface Project {
+  kind: string;
+  title: string;
+  summary: string;
+  points: string[];
+  tags: string[];
+  link?: { href: string; label: string };
+}
+
+const projects: Project[] = [
+  {
+    kind: 'Freelance · with a small team',
+    title: 'An event-operations platform, moved to Azure',
+    summary:
+      'A live system that runs the people and resources behind a large pilgrimage programme. I designed the cloud setup and moved it from Google Cloud Run to Azure.',
+    points: [
+      'Terraform for dev and prod: Container Apps, PostgreSQL behind a private endpoint, Key Vault, a container registry and managed identities',
+      'GitHub Actions: every push deploys to dev; production promotes the exact image dev has been running',
+      'A schema gate and migration ledger, so releases reach production with zero downtime',
+    ],
+    tags: ['Azure', 'Terraform', 'GitHub Actions', 'FastAPI', 'PostgreSQL'],
+  },
+  {
+    kind: 'Personal project',
+    title: 'Loft, a private photo gallery on the edge',
+    summary:
+      'A self-hosted photo and video gallery for two people that runs almost entirely on Cloudflare’s free tier and installs on a phone like an app.',
+    points: [
+      'One Cloudflare Worker serves both the app and the API; D1 holds the data, R2 the files',
+      'Locked behind Cloudflare Access, so only the listed email addresses get in',
+      'Thumbnails and video frames are made in the browser, so the server does no image work',
+    ],
+    tags: ['Cloudflare Workers', 'D1', 'R2', 'Zero Trust', 'React'],
+    link: { href: 'https://github.com/muhsinjifri/loft-photo-gallery', label: 'Source on GitHub' },
+  },
+  {
+    kind: 'Hackathon · Top 10 finalist',
+    title: 'Searching audit findings by meaning',
+    summary:
+      'A retrieval-augmented service that indexes past audit findings and remediation playbooks, so reviewers can find related cases without guessing the right keywords.',
+    points: [
+      'Python and FastAPI service with semantic search endpoints',
+      'ChromaDB vector store built over historical findings and playbooks',
+      'Enterprise LLM APIs answer from the retrieved documents',
+    ],
+    tags: ['Python', 'FastAPI', 'ChromaDB', 'RAG'],
+  },
+];
+---
+
+<Section id="projects" number="03" title="Projects" meta="Outside the day job">
+  <div class="grid">
+    {
+      projects.map((p, i) => (
+        <article class="card">
+          <header class="card-head">
+            <span class="index">P{i + 1}</span>
+            <span class="kind micro">{p.kind}</span>
+          </header>
+          <h3>{p.title}</h3>
+          <p class="summary">{p.summary}</p>
+          <ul class="points">
+            {p.points.map((pt) => <li>{pt}</li>)}
+          </ul>
+          <footer class="card-foot">
+            <ul class="tags mono">
+              {p.tags.map((t) => <li>{t}</li>)}
+            </ul>
+            {p.link && (
+              <a class="link mono" href={p.link.href} rel="noopener">
+                {p.link.label} ↗
+              </a>
+            )}
+          </footer>
+        </article>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+    gap: var(--space-6);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: var(--rule);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .index {
+    font-family: var(--font-display);
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 0.9;
+  }
+
+  .kind {
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-align: right;
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .summary {
+    font-size: var(--step-0);
+  }
+
+  .points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+
+  /* small square bullets, the same mark as the hero's full stop */
+  .points li {
+    position: relative;
+    padding-left: 1.1em;
+  }
+
+  .points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.4em;
+    height: 0.4em;
+    background: var(--vermilion);
+  }
+
+  .card-foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: var(--space-2);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--2);
+  }
+
+  .tags li {
+    padding: 3px 8px;
+    border: 1px solid var(--ink);
+  }
+
+  .link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step--1);
+  }
+</style>
