@@ -1,11 +1,12 @@
 ---
 import HelmWheel from './HelmWheel.astro';
 
+// The spec strip under the header: label, then value, like the info bar on a poster.
 const notes = [
-  ['Kubernetes (n.)', 'Greek for helmsman'],
-  ['Steered 20 services', 'from EC2 to Amazon EKS'],
-  ['Helm · Argo CD', 'Terraform · AWS'],
-  ['Bengaluru, India', 'IST · UTC+5:30'],
+  ['Etymology', 'Kubernetes (n.), Greek for helmsman'],
+  ['Flagship', '20 services, EC2 → Amazon EKS'],
+  ['Toolkit', 'Terraform · Helm · Argo CD'],
+  ['Based in', 'Bengaluru, India · IST'],
 ];
 
 // Compass rose: four cardinal points (north in vermilion), four smaller intercardinals, a ticked ring.
@@ -28,16 +29,16 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
 });
 ---
 
-<section class="hero wrap" data-font="f" aria-labelledby="hero-title">
-  <!-- Temporary while choosing the headline font: ?font=f or ?font=g -->
-  <script is:inline>
-    {
-      const f = new URLSearchParams(location.search).get('font');
-      if (f) document.currentScript.parentElement.dataset.font = f;
-    }
-  </script>
+<section class="hero wrap" aria-labelledby="hero-title">
   <ul class="notes" aria-label="Quick facts">
-    {notes.map(([a, b]) => <li><span>{a}</span><span>{b}</span></li>)}
+    {
+      notes.map(([k, v], i) => (
+        <li>
+          <span class="k">{String(i + 1).padStart(2, '0')} · {k}</span>
+          <span class="v">{v}</span>
+        </li>
+      ))
+    }
   </ul>
 
   <!--
@@ -46,6 +47,7 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     .art has no z-index of its own, so its layers stack with the headline.
   -->
   <div class="art" aria-hidden="true">
+    <div class="drafting"></div>
     <div class="stage stage--back">
       <svg viewBox="-300 -300 600 600">
         <circle r="232" class="sun"></circle>
@@ -129,30 +131,50 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     grid-template-rows: auto 1fr;
     column-gap: 0;
     row-gap: var(--space-6);
-    padding-block: var(--space-4) var(--space-7);
+    padding-block: 0 var(--space-7);
     isolation: isolate;
   }
 
-  /* micro-type row, as on a printed poster */
+  /* Spec strip: a heavy rule on top, hairline dividers, label over value. */
   .notes {
     grid-column: 1 / -1;
     position: relative;
     z-index: 3;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-5);
     margin: 0;
-    padding: var(--space-3) 0 0;
-    border-top: var(--hairline);
+    padding: 0;
+    border-top: var(--rule);
+    border-bottom: var(--hairline);
     list-style: none;
-    font-size: var(--step--2);
-    line-height: 1.35;
-    letter-spacing: 0.02em;
   }
 
   .notes li {
     display: flex;
     flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4) var(--space-3);
+  }
+
+  .notes li:nth-child(n + 2) {
+    border-left: var(--hairline);
+  }
+
+  .notes li:first-child {
+    padding-left: 0;
+  }
+
+  .k {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .v {
+    font-size: var(--step--1);
+    line-height: 1.35;
   }
 
   .art {
@@ -167,6 +189,20 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
   .stage {
     position: absolute;
     inset: 0;
+  }
+
+  /* Drafting paper behind the wheel, fading out at the edges: a nod to engineering drawings. */
+  .drafting {
+    position: absolute;
+    inset: -12%;
+    z-index: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-position: center;
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
   }
 
   .stage--back {
@@ -273,32 +309,14 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     display: flex;
     flex-direction: column;
     padding-top: var(--space-5);
-    font-family: var(--tagline-font, var(--font-sans));
-    font-size: min(var(--tagline-max, var(--step-display)), var(--tagline-fit, 15.6cqi));
-    font-weight: var(--tagline-weight, 500);
-    line-height: var(--tagline-leading, 1);
-    letter-spacing: var(--tagline-tracking, var(--tracking-display));
-    text-transform: var(--tagline-case, none);
+    font-family: var(--font-display);
+    /* Big Shoulders caps: the wider line is about 6.1em, so 16.4cqi fills the column. */
+    font-size: min(8.5rem, 16.4cqi);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
     white-space: nowrap;
-  }
-
-  /* Headline font candidates. The fit value is 100 ÷ (widest line in em), so each one fills its column. */
-  .hero[data-font='f'] {
-    --tagline-font: 'Big Shoulders Variable', 'Arial Narrow', sans-serif;
-    --tagline-weight: 800;
-    --tagline-case: uppercase;
-    --tagline-tracking: 0.005em;
-    --tagline-leading: 0.88;
-    --tagline-fit: 16.4cqi;
-    --tagline-max: 8.5rem;
-  }
-
-  .hero[data-font='g'] {
-    --tagline-font: var(--font-display);
-    --tagline-weight: 400;
-    --tagline-tracking: -0.01em;
-    --tagline-leading: 0.98;
-    --tagline-fit: 11.8cqi;
   }
 
   .line--2 {
@@ -366,7 +384,15 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
   @media (max-width: 900px) {
     .notes {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      row-gap: var(--space-3);
+    }
+
+    .notes li:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .notes li:nth-child(n + 3) {
+      border-top: var(--hairline);
     }
   }
 
@@ -392,12 +418,9 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       margin-right: 0;
     }
 
-    .hero {
-      --tagline-max: 100vw;
-    }
-
     .tagline {
       padding-top: 0;
+      font-size: 16.4cqi;
     }
 
     .line--2 {
