@@ -21,42 +21,48 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     {notes.map(([a, b]) => <li><span>{a}</span><span>{b}</span></li>)}
   </ul>
 
-  <!-- back layer: the sun and its orbit sit behind the headline -->
-  <div class="stage stage--back" aria-hidden="true">
-    <svg viewBox="-300 -300 600 600">
-      <circle r="232" class="sun"></circle>
-      <circle r="292" class="orbit"></circle>
-      <circle cx="230.1" cy="-179.8" r="7" class="orbit-dot"></circle>
-    </svg>
+  <!--
+    The artwork has two layers with the headline between them:
+    the sun and orbit sit behind the words, the wheel passes in front.
+    .art has no z-index of its own, so its layers stack with the headline.
+  -->
+  <div class="art" aria-hidden="true">
+    <div class="stage stage--back">
+      <svg viewBox="-300 -300 600 600">
+        <circle r="232" class="sun"></circle>
+        <circle r="292" class="orbit"></circle>
+        <circle cx="230.1" cy="-179.8" r="7" class="orbit-dot"></circle>
+      </svg>
+    </div>
+    <div class="stage stage--front">
+      <HelmWheel />
+    </div>
+    <span class="spark"></span>
   </div>
 
-  <p class="tagline" aria-hidden="true">
-    <span class="line line--1">Steady hands</span>
-    <span class="line line--2">on the wheel<i class="full-stop"></i></span>
-  </p>
-
-  <!-- front layer: the wheel passes in front of the headline -->
-  <div class="stage stage--front">
-    <HelmWheel />
-  </div>
-
-  <div class="intro">
-    <h1 id="hero-title">
-      <span class="visually-hidden">Steady hands on the wheel. </span>
-      Sayed Muhsin Jifri
-      <span class="role">DevOps / Platform Engineer, Bengaluru</span>
-    </h1>
-    <p>
-      I build and run the platform underneath: EKS clusters, Terraform, GitOps releases. Boring in production, on purpose.
+  <div class="copy">
+    <p class="tagline" aria-hidden="true">
+      <span>Steady hands</span>
+      <span class="line--2">on the wheel<i class="full-stop"></i></span>
     </p>
-    <div class="cta">
-      <a class="button" href="#work">See the work</a>
-      <a href="/resume.pdf">Résumé (PDF)</a>
+
+    <div class="intro">
+      <h1 id="hero-title">
+        <span class="visually-hidden">Steady hands on the wheel. </span>
+        Sayed Muhsin Jifri
+        <span class="role">DevOps / Platform Engineer, Bengaluru</span>
+      </h1>
+      <p>
+        I build and run the platform underneath: EKS clusters, Terraform, GitOps releases. Boring in production, on purpose.
+      </p>
+      <div class="cta">
+        <a class="button" href="#work">See the work</a>
+        <a href="/resume.pdf">Résumé (PDF)</a>
+      </div>
     </div>
   </div>
 
   <svg class="burst" viewBox="-100 -100 200 200" aria-hidden="true"><polygon points={burst}></polygon></svg>
-  <span class="spark" aria-hidden="true"></span>
 </section>
 
 <script>
@@ -88,18 +94,22 @@ const burst = Array.from({ length: 24 }, (_, i) => {
 
 <style>
   .hero {
-    --stage: clamp(360px, 47vw, 660px);
+    /* The wheel is sized by whichever is tighter, the width or the height of the screen,
+       so it never climbs into the notes row on short laptop screens. */
+    --stage: clamp(300px, min(44vw, 100svh - 210px), 640px);
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: clamp(640px, calc(100svh - 90px), 880px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--stage);
+    grid-template-rows: auto 1fr;
+    column-gap: 0;
+    row-gap: var(--space-6);
     padding-block: var(--space-4) var(--space-7);
     isolation: isolate;
   }
 
   /* micro-type row, as on a printed poster */
   .notes {
+    grid-column: 1 / -1;
     position: relative;
     z-index: 3;
     display: grid;
@@ -119,13 +129,18 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     flex-direction: column;
   }
 
-  .stage {
-    position: absolute;
-    top: 50%;
-    right: calc(var(--gutter) - var(--stage) * 0.04);
+  .art {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    align-self: center;
     width: var(--stage);
     aspect-ratio: 1;
-    translate: 0 -46%;
+  }
+
+  .stage {
+    position: absolute;
+    inset: 0;
   }
 
   .stage--back {
@@ -152,13 +167,41 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     fill: var(--ink);
   }
 
+  .spark {
+    position: absolute;
+    left: 2%;
+    bottom: 4%;
+    z-index: 1;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--mustard);
+  }
+
+  /*
+    The text column reaches a little way under the wheel, as far as the handle tips,
+    but stops before the rim so every word stays readable. The headline is sized
+    from the column's own width (each line is about 6.2em wide), so it never wraps.
+  */
+  .copy {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-7);
+    margin-right: calc(var(--stage) * -0.13);
+    container-type: inline-size;
+  }
+
   .tagline {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    margin-top: var(--space-7);
-    font-size: var(--step-display);
+    padding-top: var(--space-5);
+    font-size: min(var(--step-display), 15.6cqi);
+    white-space: nowrap;
     font-weight: 500;
     line-height: 1;
     letter-spacing: var(--tracking-display);
@@ -168,7 +211,7 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     display: flex;
     align-items: baseline;
     gap: 0.06em;
-    margin-left: clamp(0px, 3vw, 48px);
+    margin-left: 0.45em;
   }
 
   .full-stop {
@@ -185,7 +228,6 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     flex-direction: column;
     gap: var(--space-4);
     max-width: 25rem;
-    margin-top: var(--space-7);
   }
 
   h1 {
@@ -201,10 +243,6 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     font-size: var(--step-0);
     font-weight: 500;
     letter-spacing: 0;
-  }
-
-  .intro p {
-    font-size: var(--step-0);
   }
 
   .cta {
@@ -240,17 +278,6 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     fill: var(--vermilion);
   }
 
-  .spark {
-    position: absolute;
-    left: 46%;
-    bottom: var(--space-8);
-    z-index: 1;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--mustard);
-  }
-
   @media (max-width: 900px) {
     .notes {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -258,23 +285,32 @@ const burst = Array.from({ length: 24 }, (_, i) => {
     }
   }
 
-  /* Phone: the wheel sits on top, the headline slides underneath its lower half. */
+  /* Phone: one column. The wheel comes first and the headline tucks under its lower handles. */
   @media (max-width: 760px) {
     .hero {
-      --stage: min(94vw, 520px);
-      min-height: 0;
-      justify-content: flex-start;
+      --stage: min(92vw, 520px);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      row-gap: var(--space-5);
       padding-bottom: var(--space-8);
     }
 
-    .stage {
-      top: calc(var(--space-8) + 3.2rem);
-      right: 50%;
-      translate: 50% 0;
+    .art {
+      grid-column: 1;
+      grid-row: 2;
+      justify-self: center;
+    }
+
+    .copy {
+      grid-column: 1;
+      grid-row: 3;
+      margin-right: 0;
+      margin-top: calc(var(--stage) * -0.1);
     }
 
     .tagline {
-      margin-top: calc(var(--stage) * 0.93);
+      padding-top: 0;
+      font-size: 15cqi;
     }
 
     .line--2 {
