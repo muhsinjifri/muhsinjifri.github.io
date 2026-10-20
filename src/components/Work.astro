@@ -61,22 +61,24 @@ import Standards from './diagrams/Standards.astro';
 
     <CaseStudy
       number="03"
-      kicker="Platform · Engineering standards"
-      title="Standards other teams build on"
+      kicker="Platform · Infrastructure as code"
+      title="Terraform modules other teams build on"
       stats={[
-        { value: '3', label: 'standards that teams beyond mine follow' },
+        { value: '5', label: 'areas the modules cover: EKS, ECR, IAM, VPC, Secrets Manager' },
+        { value: '3', label: 'shared standards: modules, CI templates, a Helm chart' },
       ]}
-      tags={['GitLab CI', 'Terraform', 'Helm']}
-      caption="Three standards, one baseline, many services."
+      tags={['Terraform', 'S3 + DynamoDB state', 'GitLab CI', 'Helm']}
+      caption="Shared modules and standards, one baseline, many teams."
     >
       <p>
-        A good platform makes the right way the easy way. I wrote and maintain three standards that other teams follow:
-        reusable GitLab CI templates, Terraform module conventions for naming, tagging and state layout, and a standard
-        Helm chart with one values structure for every service.
+        A good platform makes the right way the easy way. I built reusable Terraform modules for EKS, ECR, IAM, VPC and
+        Secrets Manager that other teams now use to stand up their own infrastructure, with conventions that keep it
+        consistent: every team names, tags and stores its state the same way.
       </p>
       <p>
-        Pipelines stop drifting apart, infrastructure reads the same in every repository, and the tagging convention is
-        what our cost reporting is built on.
+        Alongside them sit reusable GitLab CI templates and a standard Helm chart with one values structure for every
+        service. Pipelines stop drifting apart, infrastructure reads the same in every repository, and the shared tags
+        are what our cost reporting is built on.
       </p>
       <Standards slot="diagram" />
     </CaseStudy>

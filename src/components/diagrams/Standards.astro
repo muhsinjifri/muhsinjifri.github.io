@@ -1,8 +1,8 @@
 ---
-// Three standards feed one platform baseline, which every team's services start from.
+// Shared Terraform modules (plus CI templates and a Helm chart) form one baseline that other teams build on.
 const standards = [
+  { title: 'Terraform modules', sub: 'EKS · ECR · IAM · VPC · Secrets' },
   { title: 'GitLab CI templates', sub: 'include, set variables, ship' },
-  { title: 'Terraform conventions', sub: 'naming · tagging · state' },
   { title: 'Standard Helm chart', sub: 'one values structure' },
 ].map((s, i) => ({ ...s, y: 30 + i * 74 }));
 
@@ -13,7 +13,7 @@ const teams = ['A', 'B', 'C'].map((t, i) => ({ label: `Team ${t}`, y: 30 + i * 7
   class="diagram"
   viewBox="0 0 680 270"
   role="img"
-  aria-label="Three standards, reusable GitLab CI templates, Terraform module conventions and a standard Helm chart, form one platform baseline that services across several teams start from."
+  aria-label="Reusable Terraform modules for EKS, ECR, IAM, VPC and Secrets Manager, together with GitLab CI templates and a standard Helm chart, form one platform baseline that several teams build their infrastructure and services on."
 >
   <defs>
     <pattern id="std-grid" width="16" height="16" patternUnits="userSpaceOnUse">
@@ -53,5 +53,5 @@ const teams = ['A', 'B', 'C'].map((t, i) => ({ label: `Team ${t}`, y: 30 + i * 7
       </g>
     ))
   }
-  <text x="10" y="258" class="dg-text dg-small dg-muted">teams build on one shared baseline instead of reinventing it per service</text>
+  <text x="10" y="258" class="dg-text dg-small dg-muted">teams reuse the same modules instead of writing their own infrastructure from scratch</text>
 </svg>
