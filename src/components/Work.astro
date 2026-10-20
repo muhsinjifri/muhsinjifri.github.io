@@ -1,0 +1,83 @@
+---
+// Selected work. Every claim here traces to master-profile.md in the resume workspace.
+import '../styles/diagram.css';
+import Section from './Section.astro';
+import CaseStudy from './CaseStudy.astro';
+import Migration from './diagrams/Migration.astro';
+import Pipeline from './diagrams/Pipeline.astro';
+import Standards from './diagrams/Standards.astro';
+---
+
+<Section id="work" number="02" title="Selected work" meta="IQVIA · 2024 to now">
+  <div class="cases">
+    <CaseStudy
+      number="01"
+      kicker="Platform · Migration"
+      title="Moving 20 microservices from EC2 to Amazon EKS"
+      stats={[
+        { value: '75%', label: 'lower compute cost after the move' },
+        { value: '20', label: 'services containerised and migrated' },
+        { value: '15', label: 'engineers I was the technical contact for' },
+      ]}
+      tags={['Amazon EKS', 'Docker', 'Helm', 'Terraform', 'Spot', 'HPA']}
+      caption="Before and after: one service per server, then one cluster for all of them."
+    >
+      <p>
+        When I joined, the services ran one per EC2 instance and a proof of concept for EKS was all that existed. I
+        became the main implementation owner: containerising every service, writing the Helm values, probes, storage and
+        networking, and wiring up the CI/CD and integrations around them.
+      </p>
+      <p>
+        I made the architecture calls on cluster layout, networking, deployment strategy and observability, and presented
+        the target design to leadership. Cost came down through Spot capacity, rightsizing from real usage, and
+        autoscaling with the Cluster Autoscaler and HPA. The work earned an IQVIA Impact Award.
+      </p>
+      <Migration slot="diagram" />
+    </CaseStudy>
+
+    <CaseStudy
+      number="02"
+      kicker="Delivery · Release engineering"
+      title="One GitOps path from commit to production"
+      stats={[
+        { value: '5', label: 'environments on the same path: dev, QA, UAT, prod, DR' },
+        { value: 'SHA', label: 'tagged images: every deploy traces back to a commit' },
+      ]}
+      tags={['GitLab CI', 'Argo CD', 'Helm', 'Amazon ECR', 'ServiceNow']}
+      caption="CI builds and tags; Git records the change; Argo CD deploys it."
+    >
+      <p>
+        I designed and maintain the GitLab CI/CD pipelines: a Maven build, a Docker image pushed to Amazon ECR, then an
+        automatic update of the Helm values with that commit's tag. Argo CD notices the change and syncs it to the
+        cluster, so what runs in each environment is always a commit you can read.
+      </p>
+      <p>
+        I also run the human side of releases: deployment windows, approvals and change requests, post-deployment checks,
+        rollbacks and hotfixes, across five environments including a DR setup I helped build.
+      </p>
+      <Pipeline slot="diagram" />
+    </CaseStudy>
+
+    <CaseStudy
+      number="03"
+      kicker="Platform · Engineering standards"
+      title="Standards other teams build on"
+      stats={[
+        { value: '3', label: 'standards that teams beyond mine follow' },
+      ]}
+      tags={['GitLab CI', 'Terraform', 'Helm']}
+      caption="Three standards, one baseline, many services."
+    >
+      <p>
+        A good platform makes the right way the easy way. I wrote and maintain three standards that other teams follow:
+        reusable GitLab CI templates, Terraform module conventions for naming, tagging and state layout, and a standard
+        Helm chart with one values structure for every service.
+      </p>
+      <p>
+        Pipelines stop drifting apart, infrastructure reads the same in every repository, and the tagging convention is
+        what our cost reporting is built on.
+      </p>
+      <Standards slot="diagram" />
+    </CaseStudy>
+  </div>
+</Section>

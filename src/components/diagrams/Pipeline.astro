@@ -1,0 +1,55 @@
+---
+// Commit → GitLab CI → Amazon ECR → Helm values → Argo CD → five environments.
+const stages = [
+  { title: 'Commit', sub: 'merge request' },
+  { title: 'GitLab CI', sub: 'Maven · Docker' },
+  { title: 'Amazon ECR', sub: 'image:<sha>' },
+  { title: 'Helm values', sub: 'tag bumped' },
+  { title: 'Argo CD', sub: 'detects · syncs', hot: true },
+].map((s, i) => ({ ...s, x: 10 + i * 134 }));
+
+const envs = ['dev', 'QA', 'UAT', 'prod', 'DR'].map((name, i) => ({ name, x: 10 + i * 134, prod: name === 'prod' }));
+---
+
+<svg
+  class="diagram"
+  viewBox="0 0 680 250"
+  role="img"
+  aria-label="A commit triggers GitLab CI, which builds with Maven and Docker and pushes a SHA-tagged image to Amazon ECR. The pipeline updates the Helm values with the new tag; Argo CD detects the change and syncs it to the dev, QA, UAT, production and DR environments."
+>
+  <defs>
+    <pattern id="pipe-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" class="dg-gridline"></path>
+    </pattern>
+    <marker id="pipe-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" class="dg-arrowhead"></path>
+    </marker>
+  </defs>
+  <rect width="680" height="250" fill="url(#pipe-grid)"></rect>
+
+  {
+    stages.map((s, i) => (
+      <g>
+        <rect x={s.x} y="40" width="116" height="56" class={s.hot ? 'dg-hot' : 'dg-box'}></rect>
+        <text x={s.x + 10} y="63" class={s.hot ? 'dg-text dg-strong dg-on-hot' : 'dg-text dg-strong'}>{s.title}</text>
+        <text x={s.x + 10} y="81" class={s.hot ? 'dg-text dg-small dg-on-hot' : 'dg-text dg-small dg-muted'}>{s.sub}</text>
+        {i < stages.length - 1 && <line x1={s.x + 118} y1="68" x2={s.x + 132} y2="68" class="dg-line" marker-end="url(#pipe-arrow)"></line>}
+      </g>
+    ))
+  }
+  <text x="10" y="24" class="dg-text dg-small dg-muted">CI builds and tags</text>
+  <text x="546" y="24" class="dg-text dg-small dg-muted">GitOps deploys</text>
+
+  <line x1="604" y1="96" x2="604" y2="130" class="dg-line"></line>
+  <line x1="68" y1="130" x2="604" y2="130" class="dg-line"></line>
+  {envs.map((e) => <line x1={e.x + 58} y1="130" x2={e.x + 58} y2="150" class="dg-line" marker-end="url(#pipe-arrow)"></line>)}
+  {
+    envs.map((e) => (
+      <g>
+        <rect x={e.x} y="152" width="116" height="34" class={e.prod ? 'dg-solid' : 'dg-box'}></rect>
+        <text x={e.x + 58} y="173" text-anchor="middle" class={e.prod ? 'dg-text dg-invert' : 'dg-text'}>{e.name}</text>
+      </g>
+    ))
+  }
+  <text x="10" y="222" class="dg-text dg-small dg-muted">each environment's state is a commit in Git: readable, reviewable, revertible</text>
+</svg>

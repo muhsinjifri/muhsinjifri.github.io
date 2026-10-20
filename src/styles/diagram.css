@@ -1,0 +1,87 @@
+/*
+  Shared look for the case-study diagrams: engineering drawings on drafting paper.
+  Ink lines, paper boxes, one vermilion highlight per diagram.
+  Text on vermilion stays dark in both themes, because cream on vermilion is too low-contrast.
+*/
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-mono);
+}
+
+.diagram .dg-gridline {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.diagram .dg-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.diagram .dg-thin {
+  stroke-width: 1;
+}
+
+.diagram .dg-dash {
+  stroke-dasharray: 4 3;
+}
+
+.diagram .dg-box {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.diagram .dg-hot {
+  fill: var(--vermilion);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.diagram .dg-solid {
+  fill: var(--ink);
+}
+
+.diagram .dg-arrowhead {
+  fill: var(--ink);
+}
+
+.diagram .dg-text {
+  fill: var(--ink);
+  font-size: 11px;
+}
+
+.diagram .dg-strong {
+  font-weight: 500;
+}
+
+.diagram .dg-small {
+  font-size: 9.5px;
+}
+
+.diagram .dg-muted {
+  fill: var(--muted);
+}
+
+.diagram .dg-invert {
+  fill: var(--paper);
+}
+
+.diagram .dg-on-hot {
+  fill: #151311;
+}
+
+.diagram .dg-on-hot-line {
+  fill: none;
+  stroke: #151311;
+  stroke-width: 1.3;
+}
+
+.diagram .dg-on-hot-solid {
+  fill: #151311;
+}

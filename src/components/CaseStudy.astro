@@ -1,0 +1,216 @@
+---
+interface Stat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  number: string;
+  kicker: string;
+  title: string;
+  stats: Stat[];
+  tags: string[];
+  caption: string;
+}
+
+const { number, kicker, title, stats, tags, caption } = Astro.props;
+---
+
+<!--
+  One case study: big number on the left, the story and its drawing in the middle,
+  outcomes and tools in the margin. On phones everything stacks.
+-->
+<article class="case">
+  <div class="num" aria-hidden="true">{number}</div>
+
+  <div class="main">
+    <p class="kicker micro mono">{kicker}</p>
+    <h3>{title}</h3>
+    <div class="story">
+      <slot />
+    </div>
+    <figure>
+      <div class="drawing">
+        <slot name="diagram" />
+      </div>
+      <figcaption class="mono">Fig. {number}. {caption}</figcaption>
+    </figure>
+  </div>
+
+  <aside class="side" aria-label="Outcomes and tools">
+    <dl>
+      {
+        stats.map((s) => (
+          <div class="stat">
+            <dt>{s.label}</dt>
+            <dd>{s.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <ul class="tags mono">
+      {tags.map((t) => <li>{t}</li>)}
+    </ul>
+  </aside>
+</article>
+
+<style>
+  .case {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr) 15rem;
+    gap: var(--space-7);
+    padding-block: var(--space-7);
+    border-top: var(--hairline);
+  }
+
+  .case:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .num {
+    font-family: var(--font-display);
+    font-size: 6.5rem;
+    font-weight: 800;
+    line-height: 0.8;
+  }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .kicker {
+    color: var(--muted);
+  }
+
+  h3 {
+    max-width: 22ch;
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  .story {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  figure {
+    margin: var(--space-4) 0 0;
+  }
+
+  .drawing {
+    border: var(--hairline);
+    background: var(--paper);
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
+
+  dl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin: 0;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: var(--rule);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 3.25rem;
+    font-weight: 800;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+
+  dt {
+    font-size: var(--step--1);
+    line-height: 1.35;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--2);
+  }
+
+  .tags li {
+    padding: 3px 8px;
+    border: 1px solid var(--ink);
+  }
+
+  /* Laptop: the margin column moves under the story. */
+  @media (max-width: 1100px) {
+    .case {
+      grid-template-columns: 5rem minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .num {
+      font-size: 5rem;
+    }
+
+    .side {
+      grid-column: 2;
+      padding-top: 0;
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: var(--space-5);
+    }
+  }
+
+  /* Phone: one column; the drawing scrolls sideways rather than shrinking text to nothing. */
+  @media (max-width: 760px) {
+    .case {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+
+    .num {
+      font-size: 3.5rem;
+    }
+
+    .side {
+      grid-column: 1;
+    }
+
+    .drawing {
+      overflow-x: auto;
+    }
+
+    .drawing :global(.diagram) {
+      min-width: 560px;
+    }
+  }
+</style>

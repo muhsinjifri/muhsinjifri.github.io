@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
+import Work from '../components/Work.astro';
 import Footer from '../components/Footer.astro';
 ---
 
@@ -14,11 +15,9 @@ import Footer from '../components/Footer.astro';
   <main id="main">
     <Hero />
 
-    <!-- Skeleton: each section gets its real content in the content pass. -->
-    <Section id="work" number="02" title="Selected work">
-      <p class="pending">Case studies go here.</p>
-    </Section>
+    <Work />
 
+    <!-- Skeleton: each section gets its real content in the content pass. -->
     <Section id="projects" number="03" title="Projects">
       <p class="pending">Projects go here.</p>
     </Section>
