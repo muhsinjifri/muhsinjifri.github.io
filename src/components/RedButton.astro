@@ -1,0 +1,94 @@
+---
+// The curious one: a big red button under a safety cover, labelled "Friday deploy".
+// It leads to the 404, which is dressed up as an incident. The cover lifts on hover/focus.
+---
+
+<a class="red-button" href="/friday-deploy" aria-label="Friday deploy">
+  <svg viewBox="0 0 140 120" aria-hidden="true">
+    <defs>
+      <linearGradient id="rb-cap" x1="0" x2="1">
+        <stop offset="0" stop-color="#f7956a"></stop>
+        <stop offset="0.45" stop-color="#f05a1e"></stop>
+        <stop offset="1" stop-color="#a32e08"></stop>
+      </linearGradient>
+      <pattern id="rb-hazard" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="12" height="12" fill="#151311"></rect>
+        <rect width="6" height="12" fill="#e6a21c"></rect>
+      </pattern>
+      <radialGradient id="rb-shadow">
+        <stop offset="0" stop-color="#000" stop-opacity="0.3"></stop>
+        <stop offset="1" stop-color="#000" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+
+    <ellipse cx="74" cy="108" rx="66" ry="8" fill="url(#rb-shadow)"></ellipse>
+    <!-- plate, same perspective as the cone's base on the 404 -->
+    <polygon points="26,60 114,60 130,86 10,86" fill="#2a2623"></polygon>
+    <rect x="10" y="86" width="120" height="16" fill="url(#rb-hazard)"></rect>
+    <!-- the button -->
+    <ellipse cx="70" cy="72" rx="30" ry="9" fill="#151311"></ellipse>
+    <path d="M 47 69 C 47 47 93 47 93 69 A 23 7 0 0 1 47 69 Z" fill="url(#rb-cap)"></path>
+    <ellipse cx="61" cy="56" rx="6" ry="2.6" fill="#f6efe2" opacity="0.55"></ellipse>
+    <!-- safety cover, hinged at the back edge -->
+    <g class="cover">
+      <polygon points="42,40 98,40 103,48 37,48" class="cover-face"></polygon>
+      <rect x="37" y="48" width="66" height="30" class="cover-face"></rect>
+    </g>
+  </svg>
+  <span class="label">Friday deploy</span>
+</a>
+
+<style>
+  .red-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--muted);
+  }
+
+  .red-button svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .cover {
+    transform-box: view-box;
+    transform-origin: 70px 40px;
+    transition: transform 260ms cubic-bezier(0.3, 1.4, 0.5, 1);
+  }
+
+  .cover-face {
+    fill: #f6efe2;
+    fill-opacity: 0.28;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  /* lift the cover: flip it up around the hinge */
+  .red-button:hover .cover,
+  .red-button:focus-visible .cover {
+    transform: scaleY(-0.55);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .red-button:hover .label {
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cover {
+      transition: none;
+    }
+  }
+</style>

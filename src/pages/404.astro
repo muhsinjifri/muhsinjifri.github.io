@@ -49,8 +49,6 @@ const strip = [
 
     <div class="scene" aria-hidden="true">
       <span class="circle"></span>
-      <span class="dot"></span>
-      <span class="square"></span>
       <p class="big">404</p>
 
       <svg class="cone" viewBox="0 0 400 520">
@@ -177,30 +175,8 @@ const strip = [
     transform: translateX(-49%);
   }
 
-  .dot,
-  .square,
   .circle {
     position: absolute;
-  }
-
-  .dot {
-    right: 14%;
-    top: 0;
-    width: calc(var(--big) * 0.09);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--mustard);
-  }
-
-  .square {
-    right: 4%;
-    top: calc(var(--big) * 0.08);
-    width: calc(var(--big) * 0.075);
-    aspect-ratio: 1;
-    background: var(--vermilion);
-  }
-
-  .circle {
     left: 6%;
     bottom: calc(var(--big) * -0.42);
     width: calc(var(--big) * 0.82);
@@ -257,10 +233,6 @@ const strip = [
 
     .scene {
       margin-block: var(--space-7) var(--space-7);
-    }
-
-    .dot {
-      top: calc(var(--big) * -0.22);
     }
 
     .message,

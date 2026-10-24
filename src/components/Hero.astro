@@ -1,5 +1,6 @@
 ---
 import HelmWheel from './HelmWheel.astro';
+import RedButton from './RedButton.astro';
 
 // The spec strip under the header: label, then value, like the info bar on a poster.
 const notes = [
@@ -69,6 +70,11 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     </svg>
   </div>
 
+  <!-- outside .art, which is hidden from screen readers; this one is a real link -->
+  <div class="red">
+    <RedButton />
+  </div>
+
   <div class="copy">
     <p class="tagline" aria-hidden="true">
       <span>Steady hands</span>
@@ -87,7 +93,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       <div class="cta">
         <a class="button" href="#work">See the work</a>
         <a href="/resume.pdf">Résumé (PDF)</a>
-        <a class="egg" href="/prod">Deploy to prod →</a>
       </div>
     </div>
   </div>
@@ -185,6 +190,17 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     align-self: center;
     width: var(--stage);
     aspect-ratio: 1;
+  }
+
+  /* same grid cell as the art, tucked into its bottom-right corner */
+  .red {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    justify-self: end;
+    position: relative;
+    z-index: 4;
+    width: calc(var(--stage) * 0.2);
   }
 
   .stage {
@@ -374,19 +390,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     min-height: 44px;
   }
 
-  /* the curious one: leads to the 404, which pretends the deploy failed */
-  .egg {
-    flex-basis: 100%;
-    color: var(--muted);
-    text-decoration-style: dashed;
-    text-decoration-color: var(--muted);
-  }
-
-  .egg:hover {
-    color: var(--ink);
-    text-decoration-color: var(--vermilion);
-  }
-
   .button {
     display: inline-flex;
     align-items: center;
@@ -453,6 +456,13 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       right: -1%;
       bottom: -1%;
       width: 19%;
+    }
+
+    /* the compass takes the right corner on phones, so the button takes the left */
+    .red {
+      grid-column: 1;
+      justify-self: start;
+      width: 22%;
     }
   }
 </style>
