@@ -49,6 +49,12 @@ const toolbox = [
   { area: 'Observability', tools: 'Datadog, CloudWatch, Splunk' },
   { area: 'Everyday', tools: 'Linux, Bash, Python, Git' },
 ];
+
+// the same habit, pointed at my own life
+const offClock = [
+  'Apple Shortcuts, because even my phone deserves a pipeline',
+  'Notion, for the runbooks of a system with one user and no SLA',
+];
 ---
 
 <Section id="about" number="04" title="About" meta="Background">
@@ -140,6 +146,10 @@ const toolbox = [
             </div>
           ))
         }
+        <div class="off">
+          <dt class="mono">Off the clock</dt>
+          <dd>{offClock.map((line) => <span>{line}</span>)}</dd>
+        </div>
       </dl>
     </section>
   </div>
@@ -402,6 +412,23 @@ const toolbox = [
 
   .tools dd {
     margin: 0;
+  }
+
+  /* not work tools, so a dashed divider sets them apart */
+  .tools .off {
+    border-bottom: 0;
+    border-top: 1px dashed var(--muted);
+    padding-top: var(--space-3);
+  }
+
+  .tools div:has(+ .off) {
+    border-bottom: 0;
+  }
+
+  .tools .off dd {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
 
   @media (max-width: 1100px) {
