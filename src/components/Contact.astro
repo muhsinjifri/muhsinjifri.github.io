@@ -1,0 +1,305 @@
+---
+// Contact: one closing line, the email (with a copy button), and the other channels.
+// The flags spell "HI" in the International Code of Signals: H is white and red halves, I is yellow
+// with a black disc. They keep fixed colours in both themes, like real flags.
+import Section from './Section.astro';
+
+const email = 'muhsinjifri@gmail.com';
+
+const channels = [
+  { label: 'LinkedIn', value: 'in/muhsinjifri', href: 'https://www.linkedin.com/in/muhsinjifri' },
+  { label: 'GitHub', value: 'muhsinjifri', href: 'https://github.com/muhsinjifri' },
+  { label: 'Résumé', value: 'Download the PDF ↓', href: '/resume.pdf' },
+  { label: 'Based in · IST', value: 'Bengaluru, India' },
+];
+---
+
+<Section id="contact" number="05" title="Contact" meta="Bengaluru · IST">
+  <div class="intro cols">
+    <div class="pitch">
+      <p class="closing" aria-hidden="true">
+        <span>Let’s make it</span>
+        <span>boring<i class="full-stop"></i></span>
+      </p>
+      <p class="visually-hidden">Let’s make it boring.</p>
+      <p class="sub">
+        Write to me about platform, DevOps or SRE work. Email is the quickest way to reach me.
+      </p>
+      <div class="mail">
+        <a class="email" href={`mailto:${email}`}>{email}</a>
+        <button class="copy mono" type="button" data-copy={email}>Copy</button>
+        <span class="visually-hidden" aria-live="polite" data-copy-status></span>
+      </div>
+    </div>
+
+    <figure class="flags">
+      <svg viewBox="0 0 120 230" role="img" aria-label="Two maritime signal flags on a halyard, H above I, spelling HI.">
+        <line x1="20" y1="0" x2="20" y2="230" class="halyard"></line>
+        <!-- H: white hoist half, red fly half -->
+        <g transform="translate(20 22)">
+          <rect width="40" height="80" class="flag-white"></rect>
+          <rect x="40" width="40" height="80" class="flag-red"></rect>
+          <rect width="80" height="80" class="flag-edge"></rect>
+        </g>
+        <!-- I: yellow with a black disc -->
+        <g transform="translate(20 122)">
+          <rect width="80" height="80" class="flag-yellow"></rect>
+          <circle cx="40" cy="40" r="20" class="flag-black"></circle>
+          <rect width="80" height="80" class="flag-edge"></rect>
+        </g>
+        <text x="110" y="66" class="flag-letter">H</text>
+        <text x="110" y="166" class="flag-letter">I</text>
+      </svg>
+      <figcaption class="micro">Fig. 06. “HI” in maritime signal flags.</figcaption>
+    </figure>
+  </div>
+
+  <section class="elsewhere" aria-labelledby="contact-elsewhere">
+    <h3 class="group-title micro" id="contact-elsewhere">Elsewhere</h3>
+    <ul class="channels cols">
+      {
+        channels.map((c) => (
+          <li>
+            <span class="label micro">{c.label}</span>
+            {c.href ? (
+              <a class="value" href={c.href} rel={c.href.startsWith('http') ? 'noopener' : undefined}>
+                {c.value}
+              </a>
+            ) : (
+              <span class="value plain">{c.value}</span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Section>
+
+<script>
+  // Copy the email address. Falls back to the mailto link if the clipboard isn't available.
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+
+  if (button && navigator.clipboard) {
+    let timer: number | undefined;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        button.textContent = 'Copied';
+        if (status) status.textContent = 'Email address copied';
+        clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          button.textContent = 'Copy';
+          if (status) status.textContent = '';
+        }, 2000);
+      } catch {
+        window.location.href = `mailto:${button.dataset.copy}`;
+      }
+    });
+  } else if (button) {
+    button.hidden = true;
+  }
+</script>
+
+<style>
+  /* the same 4-column grid as About, so the sections share vertical edges */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .intro {
+    align-items: start;
+  }
+
+  .pitch {
+    grid-column: span 3;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .closing {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-display);
+    /* the longer line is about 6.3em wide in Big Shoulders caps */
+    font-size: min(6rem, 15.5cqi);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .full-stop {
+    display: inline-block;
+    width: 0.2em;
+    height: 0.2em;
+    background: var(--ink);
+  }
+
+  .sub {
+    max-width: 46ch;
+    font-size: var(--step-0);
+  }
+
+  .mail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .email {
+    font-size: var(--step-2);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .copy {
+    min-height: 44px;
+    min-width: 5.5rem;
+    padding: 0 var(--space-4);
+    border: var(--hairline);
+    background: transparent;
+    color: var(--ink);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .copy:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .copy:focus-visible {
+    outline: 2px solid var(--vermilion);
+    outline-offset: 2px;
+  }
+
+  /* starts on the 4th column's edge, in line with the last channel below */
+  .flags {
+    margin: 0;
+    width: min(100%, 9rem);
+  }
+
+  .flags svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .flags figcaption {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .halyard {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .flag-white {
+    fill: #f6efe2;
+  }
+
+  .flag-red {
+    fill: #d8401c;
+  }
+
+  .flag-yellow {
+    fill: #e6a21c;
+  }
+
+  .flag-black {
+    fill: #151311;
+  }
+
+  .flag-edge {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .flag-letter {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* heavy rule = a group, hairline = an item (as in About) */
+  .elsewhere {
+    margin-top: var(--space-8);
+  }
+
+  .group-title {
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-5);
+    border-top: var(--rule);
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+
+  .channels {
+    row-gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .channels li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: var(--hairline);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .value {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step-1);
+  }
+
+  @media (max-width: 1100px) {
+    .channels {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .intro {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--space-6);
+    }
+
+    .pitch {
+      grid-column: auto;
+    }
+
+    /* decorative; on phones it would only break the path from the email to the other channels */
+    .flags {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .channels {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
