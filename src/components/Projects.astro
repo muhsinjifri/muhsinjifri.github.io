@@ -87,13 +87,15 @@ const projects: Project[] = [
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
-    gap: var(--space-6);
+    gap: var(--space-4) var(--space-6);
   }
 
+  /* subgrid: head, title, summary, points and tags line up across the cards in a row */
   .card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    align-content: start;
     padding-top: var(--space-3);
     border-top: var(--rule);
   }
@@ -160,8 +162,8 @@ const projects: Project[] = [
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    margin-top: auto;
     padding-top: var(--space-2);
+    padding-bottom: var(--space-5);
   }
 
   .tags {
