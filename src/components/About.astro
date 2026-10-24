@@ -1,0 +1,336 @@
+---
+// About: a short bio, how I work, certifications, education and the toolbox.
+// Confidentiality: no employer name, no dates of employment, no graduation year.
+import Section from './Section.astro';
+import Gear from './diagrams/Gear.astro';
+import '../styles/diagram.css';
+
+const principles = [
+  {
+    title: 'Make the right way the easy way',
+    text: 'Shared modules, pipeline templates and one Helm chart, so a new service starts from something that already works.',
+  },
+  {
+    title: 'Build once, promote everywhere',
+    text: 'The image tested in DEV is the image that reaches PROD. Nothing gets rebuilt on the way up.',
+  },
+  {
+    title: 'Warn before it breaks',
+    text: 'Every alert gets an earlier warning level, so there is time to act before anyone gets paged.',
+  },
+  {
+    title: 'Leave notes behind',
+    text: 'Incidents end with a runbook the next person can follow, not just a fix only I understand.',
+  },
+];
+
+const certs = [
+  {
+    name: 'AWS Certified Solutions Architect – Associate',
+    code: 'SAA-C03',
+    year: '2025',
+    href: 'https://www.credly.com/badges/bdd0eda1-411b-4cd4-a2b6-10155483f8cf',
+  },
+  {
+    name: 'HashiCorp Certified: Terraform Associate',
+    code: '004',
+    year: '2026',
+    href: 'https://www.credly.com/badges/fff54a45-392c-44fd-9e08-bd745c8e09a3',
+  },
+];
+
+const toolbox = [
+  { area: 'Cloud', tools: 'AWS: EKS, EC2, VPC, IAM, ECR, S3, Route 53, CloudFront' },
+  { area: 'Containers', tools: 'Kubernetes, Docker, Helm' },
+  { area: 'Delivery', tools: 'GitLab CI, Argo CD, GitHub Actions' },
+  { area: 'Infrastructure', tools: 'Terraform' },
+  { area: 'Observability', tools: 'Datadog, CloudWatch, Splunk' },
+  { area: 'Everyday', tools: 'Linux, Bash, Python, Git' },
+];
+---
+
+<Section id="about" number="04" title="About" meta="Background">
+  <div class="intro">
+    <figure class="drawing">
+      <Gear />
+      <figcaption class="micro">Fig. 05. Trained on gears, working on clusters.</figcaption>
+    </figure>
+
+    <div class="bio">
+      <p class="lead">
+        I trained as a mechanical engineer and ended up building platforms. The habits came with me: draw it
+        before you build it, measure it after, and leave it simpler than you found it.
+      </p>
+      <p>
+        Most of my days are AWS and Kubernetes: moving services onto Amazon EKS, keeping Terraform reusable,
+        shipping through GitOps and watching it all in Datadog. I like the quiet wins best: a release nobody
+        notices, a warning that fires before the outage, a module another team picks up without needing to ask
+        me how it works.
+      </p>
+      <p>
+        I also spend time helping less experienced engineers with troubleshooting, Kubernetes and monitoring,
+        the same way people once helped me.
+      </p>
+    </div>
+  </div>
+
+  <ol class="principles" aria-label="How I work">
+    {
+      principles.map((p, i) => (
+        <li>
+          <span class="num micro">{String(i + 1).padStart(2, '0')} · Principle</span>
+          <h3>{p.title}</h3>
+          <p>{p.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="facts">
+    <section class="fact" aria-labelledby="about-certs">
+      <h3 class="fact-title micro" id="about-certs">Certifications</h3>
+      <ul class="certs">
+        {
+          certs.map((c) => (
+            <li>
+              <span class="cert-name">{c.name}</span>
+              <a class="cert-meta mono" href={c.href} rel="noopener">
+                {c.code} · {c.year} · Verify on Credly ↗
+              </a>
+            </li>
+          ))
+        }
+        <li class="next">
+          <span class="cert-name">Certified Kubernetes Administrator</span>
+          <span class="cert-meta mono">CKA · preparing</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="fact" aria-labelledby="about-edu">
+      <h3 class="fact-title micro" id="about-edu">Education</h3>
+      <p class="edu-degree">B.Tech, Mechanical Engineering</p>
+      <p class="edu-school">National Institute of Technology Calicut</p>
+      <p class="edu-note">
+        Convenor of Ragam, the college’s annual cultural festival: 200+ events, 30+ committees and 100+ student
+        leads to keep in step.
+      </p>
+    </section>
+
+    <section class="fact" aria-labelledby="about-tools">
+      <h3 class="fact-title micro" id="about-tools">Toolbox</h3>
+      <dl class="tools">
+        {
+          toolbox.map((t) => (
+            <div>
+              <dt class="mono">{t.area}</dt>
+              <dd>{t.tools}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+  </div>
+</Section>
+
+<script>
+  // Turn the gear against the wheel as the page scrolls. Off for anyone who prefers less motion.
+  const gear = document.querySelector<SVGGElement>('[data-gear]');
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  let queued = false;
+
+  const turn = () => {
+    queued = false;
+    if (gear) gear.setAttribute('transform', `rotate(${(-window.scrollY * 0.06).toFixed(2)})`);
+  };
+
+  if (gear && !still.matches) {
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(turn);
+        }
+      },
+      { passive: true },
+    );
+  }
+</script>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .drawing {
+    margin: 0;
+    padding: var(--space-5);
+    border: var(--hairline) solid var(--ink);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .drawing figcaption {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .bio {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .lead {
+    font-size: var(--step-2);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+  }
+
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--space-6);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* subgrid: number, title and text line up across the principles in a row */
+  .principles li {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    align-content: start;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--rule);
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .principles h3 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .principles p {
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+  }
+
+  .fact-title {
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-4);
+    border-top: var(--rule);
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+
+  .certs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .certs li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .cert-name {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .cert-meta {
+    align-self: flex-start;
+    font-size: var(--step--2);
+  }
+
+  .next .cert-name,
+  .next .cert-meta {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .edu-degree {
+    font-weight: 600;
+  }
+
+  .edu-school {
+    color: var(--muted);
+  }
+
+  .edu-note {
+    margin-top: var(--space-4);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .tools {
+    margin: 0;
+  }
+
+  .tools div {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+    border-bottom: var(--hairline) solid var(--line);
+    font-size: var(--step--1);
+  }
+
+  .tools div:first-child {
+    padding-top: 0;
+  }
+
+  .tools dt {
+    color: var(--muted);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 0.15em;
+  }
+
+  .tools dd {
+    margin: 0;
+  }
+
+  @media (max-width: 860px) {
+    .intro {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .drawing {
+      max-width: 26rem;
+    }
+  }
+</style>
