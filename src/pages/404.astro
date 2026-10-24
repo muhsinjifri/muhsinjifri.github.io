@@ -1,409 +1,272 @@
 ---
-// 404: pretends the page failed to deploy. A pipeline log types itself out (all lines are in the HTML, so it
-// reads fine without JS), next to a traffic cone and a compass that can't settle on north.
+// 404, styled as an incident: a giant 404 with a traffic cone standing in front of the 0.
 // The hero's "Deploy to prod" link lands here on purpose.
 import Base from '../layouts/Base.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 
-// Cone body: a trapezoid from a narrow tip to a wide foot. Half-width at height y, measured from the tip.
-const TOP = 18;
-const FOOT = 250;
-const tipHalf = 13;
-const footHalf = 88;
-const half = (y: number) => tipHalf + ((footHalf - tipHalf) * (y - TOP)) / (FOOT - TOP);
-const body = `M ${-tipHalf} ${TOP} Q 0 ${TOP - 12} ${tipHalf} ${TOP} L ${footHalf} ${FOOT} L ${-footHalf} ${FOOT} Z`;
-const band = (y1: number, y2: number) =>
-  `M ${-half(y1)} ${y1} L ${half(y1)} ${y1} L ${half(y2)} ${y2} L ${-half(y2)} ${y2} Z`;
-const bands = [band(78, 108), band(158, 192)];
-// shade the right third, like light from the upper left
-const shade = `M ${tipHalf * 0.3} ${TOP - 4} L ${tipHalf} ${TOP} L ${footHalf} ${FOOT} L ${footHalf * 0.3} ${FOOT} Z`;
+// Cone geometry (viewBox 0 0 400 520). The body is a cone with an elliptical foot; the bands follow its curve.
+const CX = 200;
+const TIP = 30;
+const FOOT = 440;
+const tipHalf = 14;
+const footHalf = 150;
+const footRy = 22;
+const half = (y: number) => tipHalf + ((footHalf - tipHalf) * (y - TIP)) / (FOOT - TIP);
+const ry = (y: number) => (footRy * half(y)) / footHalf;
 
-// The log. {name} becomes the missing path's name in the browser.
-type Line = { kind: 'cmd' | 'err' | 'note'; text: string };
-const log: Line[] = [
-  { kind: 'cmd', text: 'kubectl rollout status deploy/{name}' },
-  { kind: 'err', text: 'error: deployment "{name}" not found' },
-  { kind: 'note', text: 'This page didn’t get deployed correctly. Checking the pipeline…' },
-  { kind: 'note', text: 'Pipeline: all green. Very reassuring. Also very wrong.' },
-  { kind: 'note', text: 'Helm values say image tag "latest". Someone is having a long day.' },
-  { kind: 'note', text: 'Paging the on-call engineer… oh. It’s me.' },
-  { kind: 'note', text: 'Status: investigating. Mood: calm. Coffee: refilled.' },
-  { kind: 'note', text: 'Recommended action: roll back to something that works.' },
+const body =
+  `M ${CX - tipHalf} ${TIP} Q ${CX} ${TIP - 24} ${CX + tipHalf} ${TIP} ` +
+  `L ${CX + footHalf} ${FOOT} A ${footHalf} ${footRy} 0 0 1 ${CX - footHalf} ${FOOT} Z`;
+
+const band = (y1: number, y2: number) => {
+  const [h1, h2] = [half(y1), half(y2)];
+  return (
+    `M ${CX - h1} ${y1} A ${h1} ${ry(y1)} 0 0 0 ${CX + h1} ${y1} ` +
+    `L ${CX + h2} ${y2} A ${h2} ${ry(y2)} 0 0 1 ${CX - h2} ${y2} Z`
+  );
+};
+const bands = [band(150, 196), band(272, 324)];
+
+const strip = [
+  { label: 'Incident', value: '#404' },
+  { label: 'Severity', value: 'Low' },
+  { label: 'Status', value: 'Investigating' },
+  { label: 'On call', value: 'S. M. Jifri' },
 ];
-
-// Compass ticks, same drawing language as the hero.
-const ticks = Array.from({ length: 32 }, (_, i) => {
-  const a = (i / 32) * Math.PI * 2;
-  const long = i % 4 === 0;
-  const r1 = long ? 74 : 80;
-  return {
-    x1: (r1 * Math.sin(a)).toFixed(1),
-    y1: (-r1 * Math.cos(a)).toFixed(1),
-    x2: (88 * Math.sin(a)).toFixed(1),
-    y2: (-88 * Math.cos(a)).toFixed(1),
-    long,
-  };
-});
 ---
 
-<Base
-  title="Off the chart · Sayed Muhsin Jifri"
-  description="This page isn't on the map. Head back to the start."
->
-  <Header />
-  <main id="main" class="lost wrap">
-    <div class="copy">
-      <p class="kicker micro">Error 404 · Release failed</p>
-      <h1 class="title">
-        <span>Deploy</span>
-        <span>failed<i class="full-stop"></i></span>
-      </h1>
-      <p class="sub">Well, this is awkward.</p>
+<Base title="Incident #404 · Sayed Muhsin Jifri" description="This page didn't make it to prod. The homepage is healthy.">
+  <main id="main" class="incident wrap">
+    <ul class="strip">
+      {
+        strip.map((s) => (
+          <li>
+            <span class="micro label">{s.label}</span>
+            <span class="value">{s.value}</span>
+          </li>
+        ))
+      }
+    </ul>
 
-      <div class="term" role="log" aria-label="Deployment log">
-        {
-          log.map((l) => (
-            <p class={`line line--${l.kind}`} data-line>
-              <span class="mark" aria-hidden="true">{l.kind === 'cmd' ? '$' : l.kind === 'err' ? '✗' : '→'}</span>
-              <span data-text={l.text}>{l.text.replaceAll('{name}', 'this-page')}</span>
-            </p>
-          ))
-        }
-      </div>
+    <div class="scene" aria-hidden="true">
+      <span class="circle"></span>
+      <span class="dot"></span>
+      <span class="square"></span>
+      <p class="big">404</p>
 
-      <div class="cta">
-        <a class="button" href="/">Roll back to the homepage</a>
-        <a href="/#work">See what did ship</a>
-      </div>
-    </div>
-
-    <div class="art" aria-hidden="true">
-      <div class="drafting"></div>
-
-      <svg class="cone" viewBox="-140 -10 280 290">
+      <svg class="cone" viewBox="0 0 400 520">
         <defs>
-          <pattern id="cone-dots" width="5" height="5" patternUnits="userSpaceOnUse">
-            <circle cx="2.5" cy="2.5" r="1.1" class="dot"></circle>
+          <linearGradient id="cone-body" x1="0" x2="1">
+            <stop offset="0" stop-color="#f7956a"></stop>
+            <stop offset="0.38" stop-color="#f05a1e"></stop>
+            <stop offset="0.62" stop-color="#e2470f"></stop>
+            <stop offset="1" stop-color="#a32e08"></stop>
+          </linearGradient>
+          <linearGradient id="cone-band" x1="0" x2="1">
+            <stop offset="0" stop-color="#f6efe2"></stop>
+            <stop offset="0.6" stop-color="#ece3d2"></stop>
+            <stop offset="1" stop-color="#bfb3a0"></stop>
+          </linearGradient>
+          <linearGradient id="cone-fade" x1="0" x2="1">
+            <stop offset="0.42" stop-color="#fff" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#fff" stop-opacity="1"></stop>
+          </linearGradient>
+          <radialGradient id="cone-shadow">
+            <stop offset="0" stop-color="#000" stop-opacity="0.32"></stop>
+            <stop offset="1" stop-color="#000" stop-opacity="0"></stop>
+          </radialGradient>
+          <pattern id="cone-dots" width="6" height="6" patternUnits="userSpaceOnUse">
+            <circle cx="3" cy="3" r="1.3" fill="#151311"></circle>
           </pattern>
+          <mask id="cone-mask">
+            <rect width="400" height="520" fill="url(#cone-fade)"></rect>
+          </mask>
           <clipPath id="cone-clip">
             <path d={body}></path>
           </clipPath>
         </defs>
-        <ellipse cx="14" cy="272" rx="132" ry="9" class="shadow"></ellipse>
-        <!-- base plate -->
-        <path d="M -122 250 L 122 250 L 132 266 L -132 266 Z" class="plate"></path>
-        <rect x="-132" y="266" width="264" height="6" class="plate-edge"></rect>
-        <!-- body, reflective bands, halftone shade -->
-        <path d={body} class="body"></path>
-        {bands.map((d) => <path d={d} class="band"></path>)}
-        <g clip-path="url(#cone-clip)">
-          <path d={shade} fill="url(#cone-dots)"></path>
-        </g>
-        <path d={body} class="outline"></path>
-        {bands.map((d) => <path d={d} class="outline"></path>)}
-      </svg>
 
-      <svg class="compass" viewBox="-100 -100 200 200">
-        <circle r="96" class="ring"></circle>
-        <circle r="88" class="ring thin"></circle>
-        {ticks.map((t) => <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class={t.long ? 'tick long' : 'tick'}></line>)}
-        <text y="-58" text-anchor="middle" class="n">N?</text>
-        <g class="needle">
-          <polygon points="0,-66 9,0 -9,0" class="north"></polygon>
-          <polygon points="0,66 9,0 -9,0" class="south"></polygon>
+        <ellipse cx="230" cy="500" rx="230" ry="22" fill="url(#cone-shadow)"></ellipse>
+        <!-- base slab in perspective -->
+        <path d="M 78 412 L 322 412 L 392 474 L 8 474 Z" fill="#2a2623"></path>
+        <rect x="8" y="474" width="384" height="18" fill="#151311"></rect>
+
+        <path d={body} fill="url(#cone-body)"></path>
+        {bands.map((d) => <path d={d} fill="url(#cone-band)"></path>)}
+        <!-- halftone shade, fading in towards the dark side -->
+        <g clip-path="url(#cone-clip)" mask="url(#cone-mask)" opacity="0.45">
+          <rect width="400" height="520" fill="url(#cone-dots)"></rect>
         </g>
-        <circle r="7" class="brass"></circle>
       </svg>
     </div>
+
+    <div class="message">
+      <h1>This page didn’t make it to prod.</h1>
+      <p>Already in the post-mortem. Meanwhile, the homepage is healthy.</p>
+    </div>
+
+    <a class="home" href="/">← Back to the homepage</a>
   </main>
-  <Footer />
 </Base>
 
-<script>
-  // Put the real path in the log, then reveal it a line at a time like a pipeline running.
-  const name =
-    decodeURIComponent(location.pathname)
-      .replace(/^\/+|\/+$/g, '')
-      .replace(/[^\w./-]/g, '')
-      .slice(0, 40) || 'this-page';
-  document.querySelectorAll<HTMLElement>('[data-text]').forEach((el) => {
-    el.textContent = (el.dataset.text ?? '').replaceAll('{name}', name);
-  });
-
-  const lines = [...document.querySelectorAll<HTMLElement>('[data-line]')];
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    lines.forEach((l) => l.classList.add('pending'));
-    lines.forEach((l, i) => setTimeout(() => l.classList.remove('pending'), 400 + i * 650));
-  }
-</script>
-
 <style>
-  .lost {
+  .incident {
+    --big: min(40vw, 56svh);
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto;
     column-gap: var(--space-6);
-    align-items: center;
-    min-height: calc(100svh - 160px);
-    padding-block: var(--space-8);
+    min-height: 100svh;
+    padding-block: var(--space-5) var(--space-6);
+    overflow: hidden;
   }
 
-  .copy {
-    grid-column: span 2;
-    container-type: inline-size;
+  /* the same spec strip as the hero: heavy top rule, hairline dividers */
+  .strip {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--rule);
+    border-bottom: var(--hairline);
+  }
+
+  .strip li {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: 2px;
+    padding: var(--space-3) 0;
   }
 
-  .kicker {
+  .label {
     font-family: var(--font-mono);
     color: var(--muted);
   }
 
-  .title {
-    display: flex;
-    flex-direction: column;
-    font-family: var(--font-display);
-    /* the wider line is about 4.6em in Big Shoulders caps */
-    font-size: min(9rem, 21cqi);
-    font-weight: 800;
-    line-height: 0.88;
-    letter-spacing: 0.005em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .full-stop {
-    display: inline-block;
-    width: 0.2em;
-    height: 0.2em;
-    background: var(--ink);
-  }
-
-  .sub {
-    font-size: var(--step-1);
-  }
-
-  /* a terminal: stays dark in both themes */
-  .term {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    padding: var(--space-4) var(--space-5);
-    background: #151311;
-    color: #ede4d3;
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    line-height: 1.5;
-  }
-
-  .line {
-    display: grid;
-    grid-template-columns: 1.4em 1fr;
-  }
-
-  /* hidden lines keep their space, so nothing jumps while the log runs */
-  .line.pending {
-    visibility: hidden;
-  }
-
-  .mark {
-    color: #a89c8c;
-  }
-
-  .line--err,
-  .line--err .mark {
-    color: #f2602a;
-  }
-
-  .line--note {
-    color: #d9cdb8;
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-5);
-    font-family: var(--font-mono);
+  .value {
     font-size: var(--step--1);
   }
 
-  /* every action in the row is at least 44px tall, text links included */
-  .cta a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 var(--space-5);
-    background: var(--ink);
-    color: var(--paper);
-    text-decoration: none;
-  }
-
-  .button:hover {
-    background: var(--vermilion);
-    color: #151311;
-  }
-
-  .art {
-    grid-column: span 2;
+  .scene {
+    grid-column: 1 / -1;
     position: relative;
-    aspect-ratio: 1;
-    display: grid;
-    place-items: center;
+    align-self: center;
+    height: calc(var(--big) * 1.02);
+    margin-block: var(--space-6) var(--space-4);
   }
 
-  .drafting {
+  .big {
     position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-position: center;
-    background-size: 24px 24px;
-    -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
-    mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: var(--big);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.01em;
   }
 
   .cone {
-    position: relative;
-    width: 62%;
-    overflow: visible;
-  }
-
-  .cone .shadow {
-    fill: var(--ink);
-    opacity: 0.14;
-  }
-
-  .cone .plate {
-    fill: var(--ink);
-  }
-
-  .cone .plate-edge {
-    fill: var(--ink);
-    opacity: 0.75;
-  }
-
-  .cone .body {
-    fill: var(--vermilion);
-  }
-
-  /* reflective bands stay cream in both themes, like the real thing */
-  .cone .band {
-    fill: #f6efe2;
-  }
-
-  .cone .dot {
-    fill: #151311;
-    opacity: 0.4;
-  }
-
-  .cone .outline {
-    fill: none;
-    stroke: var(--ink);
-    stroke-width: 2;
-    stroke-linejoin: round;
-  }
-
-  .compass {
     position: absolute;
+    left: 50%;
+    bottom: calc(var(--big) * -0.24);
+    height: calc(var(--big) * 1.32);
+    width: auto;
+    transform: translateX(-49%);
+  }
+
+  .dot,
+  .square,
+  .circle {
+    position: absolute;
+  }
+
+  .dot {
+    right: 14%;
+    top: 0;
+    width: calc(var(--big) * 0.09);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--mustard);
+  }
+
+  .square {
     right: 4%;
-    top: 6%;
-    width: 24%;
+    top: calc(var(--big) * 0.08);
+    width: calc(var(--big) * 0.075);
+    aspect-ratio: 1;
+    background: var(--vermilion);
   }
 
-  .compass .ring {
-    fill: var(--paper);
-    stroke: var(--ink);
-    stroke-width: 1.4;
+  .circle {
+    left: 6%;
+    bottom: calc(var(--big) * -0.42);
+    width: calc(var(--big) * 0.82);
+    aspect-ratio: 1;
+    border: var(--hairline);
+    border-radius: 50%;
   }
 
-  .compass .ring.thin {
-    fill: none;
-    stroke-width: 0.9;
+  .message {
+    grid-column: 1 / span 2;
+    align-self: end;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 30rem;
   }
 
-  .compass .tick {
-    stroke: var(--ink);
-    stroke-width: 0.9;
+  .message h1 {
+    font-size: var(--step-2);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
   }
 
-  .compass .tick.long {
-    stroke-width: 1.6;
+  .message p {
+    font-size: var(--step-0);
   }
 
-  .compass .n {
-    fill: var(--ink);
-    font-family: var(--font-mono);
-    font-size: 16px;
-    font-weight: 500;
+  .home {
+    grid-column: 3 / -1;
+    white-space: nowrap;
+    align-self: end;
+    justify-self: end;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step-1);
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
-  .compass .north {
-    fill: var(--vermilion);
-    stroke: var(--ink);
-    stroke-width: 1.2;
-    stroke-linejoin: round;
-  }
-
-  .compass .south {
-    fill: var(--paper);
-    stroke: var(--ink);
-    stroke-width: 1.2;
-    stroke-linejoin: round;
-  }
-
-  .compass .brass {
-    fill: var(--mustard);
-    stroke: var(--ink);
-    stroke-width: 1.2;
-  }
-
-  /* the needle hunts for north and never settles */
-  .compass .needle {
-    transform: rotate(130deg);
-    animation: hunt 6s ease-in-out infinite;
-  }
-
-  @keyframes hunt {
-    0% { transform: rotate(130deg); }
-    25% { transform: rotate(-40deg); }
-    45% { transform: rotate(70deg); }
-    70% { transform: rotate(-110deg); }
-    85% { transform: rotate(20deg); }
-    100% { transform: rotate(130deg); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .compass .needle {
-      animation: none;
-    }
-  }
-
-  @media (max-width: 860px) {
-    .lost {
-      grid-template-columns: minmax(0, 1fr);
-      row-gap: var(--space-6);
-      align-items: start;
+  @media (max-width: 760px) {
+    .incident {
+      --big: 46vw;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: var(--space-4);
     }
 
-    .copy,
-    .art {
-      grid-column: auto;
+    .strip li:nth-child(n + 3) {
+      border-top: var(--hairline);
     }
 
-    .art {
-      max-width: 22rem;
-      width: 100%;
-      justify-self: center;
+    .scene {
+      margin-block: var(--space-7) var(--space-7);
+    }
+
+    .dot {
+      top: calc(var(--big) * -0.22);
+    }
+
+    .message,
+    .home {
+      grid-column: 1 / -1;
+      justify-self: start;
     }
   }
 </style>
