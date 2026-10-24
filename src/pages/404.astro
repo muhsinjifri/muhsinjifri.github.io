@@ -1,5 +1,7 @@
 ---
-// 404: a traffic cone on drafting paper and a compass that can't settle on north.
+// 404: pretends the page failed to deploy. A pipeline log types itself out (all lines are in the HTML, so it
+// reads fine without JS), next to a traffic cone and a compass that can't settle on north.
+// The hero's "Deploy to prod" link lands here on purpose.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -16,6 +18,19 @@ const band = (y1: number, y2: number) =>
 const bands = [band(78, 108), band(158, 192)];
 // shade the right third, like light from the upper left
 const shade = `M ${tipHalf * 0.3} ${TOP - 4} L ${tipHalf} ${TOP} L ${footHalf} ${FOOT} L ${footHalf * 0.3} ${FOOT} Z`;
+
+// The log. {name} becomes the missing path's name in the browser.
+type Line = { kind: 'cmd' | 'err' | 'note'; text: string };
+const log: Line[] = [
+  { kind: 'cmd', text: 'kubectl rollout status deploy/{name}' },
+  { kind: 'err', text: 'error: deployment "{name}" not found' },
+  { kind: 'note', text: 'This page didn’t get deployed correctly. Checking the pipeline…' },
+  { kind: 'note', text: 'Pipeline: all green. Very reassuring. Also very wrong.' },
+  { kind: 'note', text: 'Helm values say image tag "latest". Someone is having a long day.' },
+  { kind: 'note', text: 'Paging the on-call engineer… oh. It’s me.' },
+  { kind: 'note', text: 'Status: investigating. Mood: calm. Coffee: refilled.' },
+  { kind: 'note', text: 'Recommended action: roll back to something that works.' },
+];
 
 // Compass ticks, same drawing language as the hero.
 const ticks = Array.from({ length: 32 }, (_, i) => {
@@ -39,18 +54,27 @@ const ticks = Array.from({ length: 32 }, (_, i) => {
   <Header />
   <main id="main" class="lost wrap">
     <div class="copy">
-      <p class="kicker micro">Error 404 · Route closed</p>
+      <p class="kicker micro">Error 404 · Release failed</p>
       <h1 class="title">
-        <span>Off the</span>
-        <span>chart<i class="full-stop"></i></span>
+        <span>Deploy</span>
+        <span>failed<i class="full-stop"></i></span>
       </h1>
-      <p class="sub">
-        There’s nothing at this address. The page may have moved, or the link has a typo. Nothing here is broken
-        that a good runbook can’t fix.
-      </p>
+      <p class="sub">Well, this is awkward.</p>
+
+      <div class="term" role="log" aria-label="Deployment log">
+        {
+          log.map((l) => (
+            <p class={`line line--${l.kind}`} data-line>
+              <span class="mark" aria-hidden="true">{l.kind === 'cmd' ? '$' : l.kind === 'err' ? '✗' : '→'}</span>
+              <span data-text={l.text}>{l.text.replaceAll('{name}', 'this-page')}</span>
+            </p>
+          ))
+        }
+      </div>
+
       <div class="cta">
-        <a class="button" href="/">Back to the start</a>
-        <a href="/#work">See the work</a>
+        <a class="button" href="/">Roll back to the homepage</a>
+        <a href="/#work">See what did ship</a>
       </div>
     </div>
 
@@ -96,6 +120,24 @@ const ticks = Array.from({ length: 32 }, (_, i) => {
   <Footer />
 </Base>
 
+<script>
+  // Put the real path in the log, then reveal it a line at a time like a pipeline running.
+  const name =
+    decodeURIComponent(location.pathname)
+      .replace(/^\/+|\/+$/g, '')
+      .replace(/[^\w./-]/g, '')
+      .slice(0, 40) || 'this-page';
+  document.querySelectorAll<HTMLElement>('[data-text]').forEach((el) => {
+    el.textContent = (el.dataset.text ?? '').replaceAll('{name}', name);
+  });
+
+  const lines = [...document.querySelectorAll<HTMLElement>('[data-line]')];
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    lines.forEach((l) => l.classList.add('pending'));
+    lines.forEach((l, i) => setTimeout(() => l.classList.remove('pending'), 400 + i * 650));
+  }
+</script>
+
 <style>
   .lost {
     display: grid;
@@ -140,8 +182,43 @@ const ticks = Array.from({ length: 32 }, (_, i) => {
   }
 
   .sub {
-    max-width: 44ch;
-    font-size: var(--step-0);
+    font-size: var(--step-1);
+  }
+
+  /* a terminal: stays dark in both themes */
+  .term {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-5);
+    background: #151311;
+    color: #ede4d3;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 1.4em 1fr;
+  }
+
+  /* hidden lines keep their space, so nothing jumps while the log runs */
+  .line.pending {
+    visibility: hidden;
+  }
+
+  .mark {
+    color: #a89c8c;
+  }
+
+  .line--err,
+  .line--err .mark {
+    color: #f2602a;
+  }
+
+  .line--note {
+    color: #d9cdb8;
   }
 
   .cta {

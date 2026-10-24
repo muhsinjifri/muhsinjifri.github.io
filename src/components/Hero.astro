@@ -87,6 +87,7 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       <div class="cta">
         <a class="button" href="#work">See the work</a>
         <a href="/resume.pdf">Résumé (PDF)</a>
+        <a class="egg" href="/prod">Deploy to prod →</a>
       </div>
     </div>
   </div>
@@ -371,6 +372,19 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+  }
+
+  /* the curious one: leads to the 404, which pretends the deploy failed */
+  .egg {
+    flex-basis: 100%;
+    color: var(--muted);
+    text-decoration-style: dashed;
+    text-decoration-color: var(--muted);
+  }
+
+  .egg:hover {
+    color: var(--ink);
+    text-decoration-color: var(--vermilion);
   }
 
   .button {
