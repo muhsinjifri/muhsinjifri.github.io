@@ -1,4 +1,6 @@
 ---
+import RedButton from './RedButton.astro';
+
 const links = [
   { href: '/#work', label: 'Work' },
   { href: '/#projects', label: 'Projects' },
@@ -20,6 +22,7 @@ const links = [
   </nav>
   <span class="divider" aria-hidden="true"></span>
   <a class="resume" href="/resume.pdf">Résumé ↓</a>
+  <RedButton />
   <button class="theme-toggle" type="button" aria-label="Switch colour theme">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
       <circle cx="12" cy="12" r="8.5"></circle>
@@ -105,6 +108,8 @@ const links = [
     place-items: center;
     width: 44px;
     height: 44px;
+    /* pull in the empty space around the small icon so it sits as close to the red button as Résumé does */
+    margin-left: -13px;
     margin-right: -12px;
     padding: 0;
     border: 0;

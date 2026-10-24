@@ -1,6 +1,5 @@
 ---
 import HelmWheel from './HelmWheel.astro';
-import RedButton from './RedButton.astro';
 
 // The spec strip under the header: label, then value, like the info bar on a poster.
 const notes = [
@@ -68,11 +67,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       {cardinals.map((p, i) => <><polygon points={p.dark} class={i === 0 ? 'north' : 'dark'}></polygon><polygon points={p.light} class={i === 0 ? 'north-light' : 'light'}></polygon></>)}
       <circle r="7" class="brass"></circle>
     </svg>
-  </div>
-
-  <!-- outside .art, which is hidden from screen readers; this one is a real link -->
-  <div class="red">
-    <RedButton />
   </div>
 
   <div class="copy">
@@ -190,17 +184,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     align-self: center;
     width: var(--stage);
     aspect-ratio: 1;
-  }
-
-  /* same grid cell as the art, tucked into its bottom-right corner */
-  .red {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: end;
-    justify-self: end;
-    position: relative;
-    z-index: 4;
-    width: calc(var(--stage) * 0.2);
   }
 
   .stage {
@@ -456,13 +439,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
       right: -1%;
       bottom: -1%;
       width: 19%;
-    }
-
-    /* the compass takes the right corner on phones, so the button takes the left */
-    .red {
-      grid-column: 1;
-      justify-self: start;
-      width: 22%;
     }
   }
 </style>

@@ -1,94 +1,105 @@
 ---
-// The curious one: a big red button under a safety cover, labelled "Friday deploy".
-// It leads to the 404, which is dressed up as an incident. The cover lifts on hover/focus.
+// The curious one, in the header: a small red button in a hazard-striped bezel, labelled "Friday deploy".
+// It leads to the 404, which is dressed up as an incident. The label shows on hover/focus; the dome
+// sinks when pressed.
 ---
 
 <a class="red-button" href="/friday-deploy" aria-label="Friday deploy">
-  <svg viewBox="0 0 140 120" aria-hidden="true">
+  <svg viewBox="0 0 28 28" width="26" height="26" aria-hidden="true">
     <defs>
-      <linearGradient id="rb-cap" x1="0" x2="1">
+      <radialGradient id="rb-cap" cx="0.38" cy="0.32" r="0.75">
         <stop offset="0" stop-color="#f7956a"></stop>
         <stop offset="0.45" stop-color="#f05a1e"></stop>
         <stop offset="1" stop-color="#a32e08"></stop>
-      </linearGradient>
-      <pattern id="rb-hazard" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <rect width="12" height="12" fill="#151311"></rect>
-        <rect width="6" height="12" fill="#e6a21c"></rect>
-      </pattern>
-      <radialGradient id="rb-shadow">
-        <stop offset="0" stop-color="#000" stop-opacity="0.3"></stop>
-        <stop offset="1" stop-color="#000" stop-opacity="0"></stop>
       </radialGradient>
+      <pattern id="rb-hazard" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="4" height="4" fill="#151311"></rect>
+        <rect width="2" height="4" fill="#e6a21c"></rect>
+      </pattern>
     </defs>
-
-    <ellipse cx="74" cy="108" rx="66" ry="8" fill="url(#rb-shadow)"></ellipse>
-    <!-- plate, same perspective as the cone's base on the 404 -->
-    <polygon points="26,60 114,60 130,86 10,86" fill="#2a2623"></polygon>
-    <rect x="10" y="86" width="120" height="16" fill="url(#rb-hazard)"></rect>
-    <!-- the button -->
-    <ellipse cx="70" cy="72" rx="30" ry="9" fill="#151311"></ellipse>
-    <path d="M 47 69 C 47 47 93 47 93 69 A 23 7 0 0 1 47 69 Z" fill="url(#rb-cap)"></path>
-    <ellipse cx="61" cy="56" rx="6" ry="2.6" fill="#f6efe2" opacity="0.55"></ellipse>
-    <!-- safety cover, hinged at the back edge -->
-    <g class="cover">
-      <polygon points="42,40 98,40 103,48 37,48" class="cover-face"></polygon>
-      <rect x="37" y="48" width="66" height="30" class="cover-face"></rect>
+    <circle cx="14" cy="14" r="13.25" fill="url(#rb-hazard)" stroke="#151311" stroke-width="1.5"></circle>
+    <circle cx="14" cy="14" r="9.5" fill="#2a2623"></circle>
+    <g class="dome">
+      <circle cx="14" cy="14" r="7" fill="url(#rb-cap)"></circle>
+      <ellipse cx="11.6" cy="11" rx="2.4" ry="1.3" fill="#f6efe2" opacity="0.6"></ellipse>
     </g>
   </svg>
-  <span class="label">Friday deploy</span>
+  <span class="tip" aria-hidden="true">Friday deploy</span>
 </a>
 
 <style>
   .red-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    text-decoration: none;
-    color: var(--muted);
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-inline: -9px;
   }
 
   .red-button svg {
-    width: 100%;
-    height: auto;
-    overflow: visible;
+    display: block;
+    transition: transform 160ms ease;
   }
 
-  .cover {
+  .dome {
     transform-box: view-box;
-    transform-origin: 70px 40px;
-    transition: transform 260ms cubic-bezier(0.3, 1.4, 0.5, 1);
+    transform-origin: 14px 14px;
+    transition: transform 120ms ease;
   }
 
-  .cover-face {
-    fill: #f6efe2;
-    fill-opacity: 0.28;
-    stroke: var(--ink);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
+  .red-button:hover svg,
+  .red-button:focus-visible svg {
+    transform: rotate(-12deg);
   }
 
-  /* lift the cover: flip it up around the hinge */
-  .red-button:hover .cover,
-  .red-button:focus-visible .cover {
-    transform: scaleY(-0.55);
+  .red-button:active .dome {
+    transform: scale(0.86);
   }
 
-  .label {
+  .red-button:focus-visible {
+    outline: 2px solid var(--vermilion);
+    outline-offset: -4px;
+    border-radius: 50%;
+  }
+
+  /* a small ink tag under the button, opening leftwards; absolute so the header never shifts */
+  .tip {
+    position: absolute;
+    top: calc(100% + 2px);
+    right: 0;
+    translate: 0 -4px;
+    padding: 5px 8px;
+    background: var(--ink);
+    color: var(--paper);
     font-family: var(--font-mono);
     font-size: var(--step--2);
     letter-spacing: var(--tracking-micro);
     text-transform: uppercase;
     white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 160ms ease,
+      translate 160ms ease;
   }
 
-  .red-button:hover .label {
-    color: var(--ink);
+  .red-button:hover .tip,
+  .red-button:focus-visible .tip {
+    opacity: 1;
+    translate: 0 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cover {
+    .red-button svg,
+    .dome,
+    .tip {
       transition: none;
+    }
+
+    .red-button:hover svg,
+    .red-button:focus-visible svg {
+      transform: none;
     }
   }
 </style>
