@@ -1,0 +1,332 @@
+---
+// 404: a traffic cone on drafting paper and a compass that can't settle on north.
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Cone body: a trapezoid from a narrow tip to a wide foot. Half-width at height y, measured from the tip.
+const TOP = 18;
+const FOOT = 250;
+const tipHalf = 13;
+const footHalf = 88;
+const half = (y: number) => tipHalf + ((footHalf - tipHalf) * (y - TOP)) / (FOOT - TOP);
+const body = `M ${-tipHalf} ${TOP} Q 0 ${TOP - 12} ${tipHalf} ${TOP} L ${footHalf} ${FOOT} L ${-footHalf} ${FOOT} Z`;
+const band = (y1: number, y2: number) =>
+  `M ${-half(y1)} ${y1} L ${half(y1)} ${y1} L ${half(y2)} ${y2} L ${-half(y2)} ${y2} Z`;
+const bands = [band(78, 108), band(158, 192)];
+// shade the right third, like light from the upper left
+const shade = `M ${tipHalf * 0.3} ${TOP - 4} L ${tipHalf} ${TOP} L ${footHalf} ${FOOT} L ${footHalf * 0.3} ${FOOT} Z`;
+
+// Compass ticks, same drawing language as the hero.
+const ticks = Array.from({ length: 32 }, (_, i) => {
+  const a = (i / 32) * Math.PI * 2;
+  const long = i % 4 === 0;
+  const r1 = long ? 74 : 80;
+  return {
+    x1: (r1 * Math.sin(a)).toFixed(1),
+    y1: (-r1 * Math.cos(a)).toFixed(1),
+    x2: (88 * Math.sin(a)).toFixed(1),
+    y2: (-88 * Math.cos(a)).toFixed(1),
+    long,
+  };
+});
+---
+
+<Base
+  title="Off the chart · Sayed Muhsin Jifri"
+  description="This page isn't on the map. Head back to the start."
+>
+  <Header />
+  <main id="main" class="lost wrap">
+    <div class="copy">
+      <p class="kicker micro">Error 404 · Route closed</p>
+      <h1 class="title">
+        <span>Off the</span>
+        <span>chart<i class="full-stop"></i></span>
+      </h1>
+      <p class="sub">
+        There’s nothing at this address. The page may have moved, or the link has a typo. Nothing here is broken
+        that a good runbook can’t fix.
+      </p>
+      <div class="cta">
+        <a class="button" href="/">Back to the start</a>
+        <a href="/#work">See the work</a>
+      </div>
+    </div>
+
+    <div class="art" aria-hidden="true">
+      <div class="drafting"></div>
+
+      <svg class="cone" viewBox="-140 -10 280 290">
+        <defs>
+          <pattern id="cone-dots" width="5" height="5" patternUnits="userSpaceOnUse">
+            <circle cx="2.5" cy="2.5" r="1.1" class="dot"></circle>
+          </pattern>
+          <clipPath id="cone-clip">
+            <path d={body}></path>
+          </clipPath>
+        </defs>
+        <ellipse cx="14" cy="272" rx="132" ry="9" class="shadow"></ellipse>
+        <!-- base plate -->
+        <path d="M -122 250 L 122 250 L 132 266 L -132 266 Z" class="plate"></path>
+        <rect x="-132" y="266" width="264" height="6" class="plate-edge"></rect>
+        <!-- body, reflective bands, halftone shade -->
+        <path d={body} class="body"></path>
+        {bands.map((d) => <path d={d} class="band"></path>)}
+        <g clip-path="url(#cone-clip)">
+          <path d={shade} fill="url(#cone-dots)"></path>
+        </g>
+        <path d={body} class="outline"></path>
+        {bands.map((d) => <path d={d} class="outline"></path>)}
+      </svg>
+
+      <svg class="compass" viewBox="-100 -100 200 200">
+        <circle r="96" class="ring"></circle>
+        <circle r="88" class="ring thin"></circle>
+        {ticks.map((t) => <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class={t.long ? 'tick long' : 'tick'}></line>)}
+        <text y="-58" text-anchor="middle" class="n">N?</text>
+        <g class="needle">
+          <polygon points="0,-66 9,0 -9,0" class="north"></polygon>
+          <polygon points="0,66 9,0 -9,0" class="south"></polygon>
+        </g>
+        <circle r="7" class="brass"></circle>
+      </svg>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .lost {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-6);
+    align-items: center;
+    min-height: calc(100svh - 160px);
+    padding-block: var(--space-8);
+  }
+
+  .copy {
+    grid-column: span 2;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .kicker {
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-display);
+    /* the wider line is about 4.6em in Big Shoulders caps */
+    font-size: min(9rem, 21cqi);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .full-stop {
+    display: inline-block;
+    width: 0.2em;
+    height: 0.2em;
+    background: var(--ink);
+  }
+
+  .sub {
+    max-width: 44ch;
+    font-size: var(--step-0);
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  /* every action in the row is at least 44px tall, text links included */
+  .cta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-5);
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+  }
+
+  .button:hover {
+    background: var(--vermilion);
+    color: #151311;
+  }
+
+  .art {
+    grid-column: span 2;
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .drafting {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-position: center;
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  }
+
+  .cone {
+    position: relative;
+    width: 62%;
+    overflow: visible;
+  }
+
+  .cone .shadow {
+    fill: var(--ink);
+    opacity: 0.14;
+  }
+
+  .cone .plate {
+    fill: var(--ink);
+  }
+
+  .cone .plate-edge {
+    fill: var(--ink);
+    opacity: 0.75;
+  }
+
+  .cone .body {
+    fill: var(--vermilion);
+  }
+
+  /* reflective bands stay cream in both themes, like the real thing */
+  .cone .band {
+    fill: #f6efe2;
+  }
+
+  .cone .dot {
+    fill: #151311;
+    opacity: 0.4;
+  }
+
+  .cone .outline {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .compass {
+    position: absolute;
+    right: 4%;
+    top: 6%;
+    width: 24%;
+  }
+
+  .compass .ring {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.4;
+  }
+
+  .compass .ring.thin {
+    fill: none;
+    stroke-width: 0.9;
+  }
+
+  .compass .tick {
+    stroke: var(--ink);
+    stroke-width: 0.9;
+  }
+
+  .compass .tick.long {
+    stroke-width: 1.6;
+  }
+
+  .compass .n {
+    fill: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .compass .north {
+    fill: var(--vermilion);
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+
+  .compass .south {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+
+  .compass .brass {
+    fill: var(--mustard);
+    stroke: var(--ink);
+    stroke-width: 1.2;
+  }
+
+  /* the needle hunts for north and never settles */
+  .compass .needle {
+    transform: rotate(130deg);
+    animation: hunt 6s ease-in-out infinite;
+  }
+
+  @keyframes hunt {
+    0% { transform: rotate(130deg); }
+    25% { transform: rotate(-40deg); }
+    45% { transform: rotate(70deg); }
+    70% { transform: rotate(-110deg); }
+    85% { transform: rotate(20deg); }
+    100% { transform: rotate(130deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .compass .needle {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .lost {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--space-6);
+      align-items: start;
+    }
+
+    .copy,
+    .art {
+      grid-column: auto;
+    }
+
+    .art {
+      max-width: 22rem;
+      width: 100%;
+      justify-self: center;
+    }
+  }
+</style>

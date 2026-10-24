@@ -366,6 +366,13 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
     font-size: var(--step--1);
   }
 
+  /* every action in the row is at least 44px tall, text links included */
+  .cta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
   .button {
     display: inline-flex;
     align-items: center;
