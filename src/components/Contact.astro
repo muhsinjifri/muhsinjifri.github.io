@@ -62,7 +62,11 @@ const channels = [
           <li>
             <span class="label micro">{c.label}</span>
             {c.href ? (
-              <a class="value" href={c.href} rel={c.href.startsWith('http') ? 'noopener' : undefined}>
+              <a
+                class="value"
+                href={c.href}
+                {...(c.href.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}
+              >
                 {c.value}
               </a>
             ) : (

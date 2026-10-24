@@ -72,7 +72,7 @@ const projects: Project[] = [
               {p.tags.map((t) => <li>{t}</li>)}
             </ul>
             {p.link && (
-              <a class="link mono" href={p.link.href} rel="noopener">
+              <a class="link mono" href={p.link.href} target="_blank" rel="noopener noreferrer">
                 {p.link.label} ↗
               </a>
             )}
