@@ -1,0 +1,211 @@
+---
+// A nautical chart of the platforms worked on: each island is one, a course runs through them, and the last
+// island is uncharted ("your stack"). Same motto as the hero: different waters, same hands on the wheel.
+// AWS is home port (daily work); hatched islands are projects only. The ship sails the course on scroll
+// (see About.astro).
+
+// Small seeded random so the coastlines are irregular but identical on every build.
+let seed = 7;
+const rand = () => {
+  seed = (seed * 16807) % 2147483647;
+  return (seed - 1) / 2147483646;
+};
+
+// Catmull-Rom through points, as cubic Béziers. Closed for coastlines, open for the course.
+const smooth = (pts: [number, number][], closed: boolean) => {
+  const n = pts.length;
+  const at = (i: number) => (closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]);
+  let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} `;
+  const last = closed ? n : n - 1;
+  for (let i = 0; i < last; i++) {
+    const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C ${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
+  }
+  return closed ? d + 'Z' : d;
+};
+
+const coast = (cx: number, cy: number, r: number, scale = 1) => {
+  const pts: [number, number][] = [];
+  const k = 9;
+  for (let i = 0; i < k; i++) {
+    const a = (i / k) * Math.PI * 2;
+    const rr = r * (0.78 + rand() * 0.34) * scale;
+    pts.push([cx + rr * Math.cos(a), cy + rr * Math.sin(a) * 0.82]);
+  }
+  return smooth(pts, true);
+};
+
+type Kind = 'home' | 'work' | 'project' | 'uncharted';
+type Side = 'right' | 'below';
+// Three rows of islands; the course snakes through the channels between them.
+const islands: { name: string; x: number; y: number; r: number; kind: Kind; label?: Side }[] = [
+  { name: 'AWS', x: 85, y: 95, r: 42, kind: 'home' },
+  { name: 'Kubernetes', x: 240, y: 92, r: 28, kind: 'work' },
+  { name: 'Terraform', x: 420, y: 98, r: 24, kind: 'work' },
+  { name: 'Python', x: 80, y: 215, r: 20, kind: 'project' },
+  { name: 'Linux', x: 205, y: 212, r: 22, kind: 'work' },
+  { name: 'CI / CD', x: 315, y: 216, r: 28, kind: 'work' },
+  { name: 'Observability', x: 462, y: 214, r: 26, kind: 'work' },
+  { name: 'Your stack', x: 75, y: 342, r: 28, kind: 'uncharted', label: 'below' },
+  { name: 'Cloudflare', x: 225, y: 340, r: 24, kind: 'project' },
+  { name: 'Azure', x: 395, y: 338, r: 26, kind: 'project' },
+  { name: 'GCP', x: 535, y: 340, r: 28, kind: 'project' },
+].map((isle) => ({ ...isle, d: coast(isle.x, isle.y, isle.r), shoal: '' }));
+// shoal lines: a looser copy of each coast, drawn dotted, like depth contours on a chart
+seed = 7;
+islands.forEach((isle) => (isle.shoal = coast(isle.x, isle.y, isle.r, 1.32)));
+
+const label = (isle: (typeof islands)[number]) =>
+  isle.label === 'below'
+    ? { x: isle.x, y: isle.y + isle.r * 0.82 + 20, anchor: 'middle' }
+    : { x: isle.x + isle.r * 1.12 + 8, y: isle.y + 4, anchor: 'start' };
+
+const course = smooth(
+  [
+    [134, 112],
+    [168, 160],
+    [330, 163],
+    [520, 160],
+    [607, 200],
+    [592, 264],
+    [470, 276],
+    [250, 272],
+    [122, 280],
+    [80, 306],
+  ],
+  false,
+);
+
+const soundings = [
+  [175, 45, '18'],
+  [548, 130, '24'],
+  [42, 168, '9'],
+  [300, 392, '12'],
+  [470, 398, '27'],
+  [604, 304, '31'],
+] as const;
+
+// border: alternating ticks every 20 units, like the latitude/longitude scale on a real chart
+const ticks: { x: number; y: number; w: number; h: number }[] = [];
+for (let x = 20, i = 0; x < 620; x += 20, i++) {
+  if (i % 2 === 0) ticks.push({ x, y: 20, w: 20, h: 5 }, { x, y: 415, w: 20, h: 5 });
+}
+for (let y = 20, i = 0; y < 420; y += 20, i++) {
+  if (i % 2 === 0) ticks.push({ x: 20, y, w: 5, h: 20 }, { x: 615, y, w: 5, h: 20 });
+}
+---
+
+<svg
+  class="diagram chart"
+  viewBox="0 0 640 440"
+  role="img"
+  aria-label="A nautical chart. Each island is something worked on: AWS is home port, with Kubernetes, Terraform, Linux, CI/CD and observability charted at work, and Python, GCP, Azure and Cloudflare charted on projects. A course runs past all of them and ends at an uncharted island labelled your stack."
+>
+  <defs>
+    <pattern id="chart-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" class="dg-line dg-thin"></line>
+    </pattern>
+  </defs>
+
+  <!-- frame and scale -->
+  <rect x="20" y="20" width="600" height="400" class="dg-line"></rect>
+  <rect x="25" y="25" width="590" height="390" class="dg-line dg-thin"></rect>
+  {ticks.map((t) => <rect x={t.x} y={t.y} width={t.w} height={t.h} class="dg-solid"></rect>)}
+  <text x="30" y="14" class="dg-text dg-small dg-muted">12°58′N</text>
+  <text x="610" y="14" text-anchor="end" class="dg-text dg-small dg-muted">77°35′E</text>
+
+  <!-- soundings -->
+  {soundings.map(([x, y, s]) => <text x={x} y={y} class="dg-text dg-small dg-muted chart-sounding">{s}</text>)}
+
+  <!-- islands -->
+  {
+    islands.map((isle) => {
+      const l = label(isle);
+      return (
+        <g>
+          <path d={isle.shoal} class="chart-shoal"></path>
+          <path d={isle.d} class={isle.kind === 'home' ? 'dg-hot' : isle.kind === 'uncharted' ? 'chart-unknown' : 'dg-box'}></path>
+          {isle.kind === 'project' && <path d={isle.d} fill="url(#chart-hatch)"></path>}
+          {isle.kind === 'uncharted' && (
+            <text x={isle.x} y={isle.y + 7} text-anchor="middle" class="dg-text chart-q">?</text>
+          )}
+          <text x={l.x} y={l.y} text-anchor={l.anchor} class="dg-text dg-strong chart-label">
+            {isle.name.toUpperCase()}
+          </text>
+        </g>
+      );
+    })
+  }
+
+  <!-- the course: dashed ahead, solid vermilion where the ship has been -->
+  <path d={course} class="chart-course"></path>
+  <path d={course} class="chart-wake" data-wake></path>
+  <g class="chart-ship" data-ship transform="translate(80 306) rotate(120)">
+    <path d="M 9 0 L -7 -6 L -3 0 L -7 6 Z" class="dg-solid"></path>
+  </g>
+
+  <!-- compass rose -->
+  <g transform="translate(578 72)">
+    <circle r="24" class="dg-line dg-thin"></circle>
+    <circle r="19" class="dg-line dg-thin dg-dash"></circle>
+    <path d="M 0 -30 L 5 0 L 0 30 L -5 0 Z" class="dg-solid"></path>
+    <path d="M -30 0 L 0 -4 L 30 0 L 0 4 Z" class="dg-box dg-thin"></path>
+    <text x="0" y="-34" text-anchor="middle" class="dg-text dg-small dg-strong">N</text>
+  </g>
+</svg>
+
+<style>
+  .chart .chart-shoal {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 0.8;
+    stroke-dasharray: 1 3;
+    opacity: 0.7;
+  }
+
+  .chart .chart-unknown {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    stroke-dasharray: 5 4;
+  }
+
+  .chart .chart-q {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  /* a paper halo so labels stay readable where the course crosses them */
+  .chart .chart-label {
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+
+  .chart .chart-label {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .chart .chart-sounding {
+    font-style: italic;
+  }
+
+  .chart .chart-course {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    stroke-dasharray: 6 5;
+  }
+
+  .chart .chart-wake {
+    fill: none;
+    stroke: var(--vermilion);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+</style>

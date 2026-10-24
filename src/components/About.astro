@@ -1,8 +1,9 @@
 ---
-// About: a short bio, how I work, certifications, education and the toolbox.
+// About: different waters, same hands on the wheel. A short bio, how I work, certifications, education
+// and the toolbox.
 // Confidentiality: no employer name, no dates of employment, no graduation year.
 import Section from './Section.astro';
-import Gear from './diagrams/Gear.astro';
+import SeaChart from './diagrams/SeaChart.astro';
 import '../styles/diagram.css';
 
 const principles = [
@@ -40,7 +41,8 @@ const certs = [
 ];
 
 const toolbox = [
-  { area: 'Cloud', tools: 'AWS: EKS, EC2, VPC, IAM, ECR, S3, Route 53, CloudFront' },
+  { area: 'Cloud', tools: 'AWS daily: EKS, EC2, VPC, IAM, ECR, S3, Route 53, CloudFront' },
+  { area: 'On projects', tools: 'GCP (Cloud Run, Cloud SQL, Cloud Build), Azure, Cloudflare' },
   { area: 'Containers', tools: 'Kubernetes, Docker, Helm' },
   { area: 'Delivery', tools: 'GitLab CI, Argo CD, GitHub Actions' },
   { area: 'Infrastructure', tools: 'Terraform' },
@@ -52,24 +54,29 @@ const toolbox = [
 <Section id="about" number="04" title="About" meta="Background">
   <div class="intro">
     <figure class="drawing">
-      <Gear />
-      <figcaption class="micro">Fig. 05. Trained on gears, working on clusters.</figcaption>
+      <div class="sea">
+        <SeaChart />
+      </div>
+      <figcaption class="legend micro">
+        <span><i class="key key-home"></i>Home port · daily work</span>
+        <span><i class="key key-work"></i>Charted at work</span>
+        <span><i class="key key-project"></i>Charted on projects</span>
+      </figcaption>
     </figure>
 
     <div class="bio">
       <p class="lead">
-        I trained as a mechanical engineer and ended up building platforms. The habits came with me: draw it
-        before you build it, measure it after, and leave it simpler than you found it.
+        The tools change. The job doesn’t: make it reproducible, make it observable, make it boring.
       </p>
       <p>
-        Most of my days are AWS and Kubernetes: moving services onto Amazon EKS, keeping Terraform reusable,
-        shipping through GitOps and watching it all in Datadog. I like the quiet wins best: a release nobody
-        notices, a warning that fires before the outage, a module another team picks up without needing to ask
-        me how it works.
+        I’ve done that job on both sides of most stacks: AWS at work and GCP, Azure and Cloudflare on my own
+        projects; Kubernetes clusters and serverless containers; GitLab CI and GitHub Actions; Datadog,
+        CloudWatch and Splunk; Java services I deploy and Python APIs I write.
       </p>
       <p>
-        I also spend time helping less experienced engineers with troubleshooting, Kubernetes and monitoring,
-        the same way people once helped me.
+        When a team runs something I haven’t touched yet, I learn it the same way: read it, write it down as
+        code, then make it quiet. Along the way I help less experienced engineers with troubleshooting,
+        Kubernetes and monitoring.
       </p>
     </div>
   </div>
@@ -111,8 +118,10 @@ const toolbox = [
       <h3 class="fact-title micro" id="about-edu">Education</h3>
       <p class="edu-degree">B.Tech, Mechanical Engineering</p>
       <p class="edu-school">National Institute of Technology Calicut</p>
+
+      <h3 class="fact-title fact-title-next micro" id="about-lead">Off the keyboard</h3>
       <p class="edu-note">
-        Convenor of Ragam, the college’s annual cultural festival: 200+ events, 30+ committees and 100+ student
+        Convenor of Ragam, a large college cultural festival: 200+ events, 30+ committees and 100+ student
         leads to keep in step.
       </p>
     </section>
@@ -134,23 +143,39 @@ const toolbox = [
 </Section>
 
 <script>
-  // Turn the gear against the wheel as the page scrolls. Off for anyone who prefers less motion.
-  const gear = document.querySelector<SVGGElement>('[data-gear]');
+  // Sail the ship along the course as the chart scrolls into view, leaving a vermilion wake.
+  // Without JS, or for anyone who prefers less motion, the voyage is shown complete.
+  const wake = document.querySelector<SVGPathElement>('[data-wake]');
+  const ship = document.querySelector<SVGGElement>('[data-ship]');
   const still = matchMedia('(prefers-reduced-motion: reduce)');
-  let queued = false;
 
-  const turn = () => {
-    queued = false;
-    if (gear) gear.setAttribute('transform', `rotate(${(-window.scrollY * 0.06).toFixed(2)})`);
-  };
+  if (wake && ship && !still.matches) {
+    const chart = wake.ownerSVGElement!;
+    const length = wake.getTotalLength();
+    wake.style.strokeDasharray = `${length}`;
+    let queued = false;
 
-  if (gear && !still.matches) {
+    const sail = () => {
+      queued = false;
+      const box = chart.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the chart's top enters the bottom of the screen, 1 when its middle reaches 40% from the top
+      const p = Math.min(1, Math.max(0, (vh - box.top) / (vh * 0.6 + box.height / 2)));
+      const at = Math.max(1, p * length);
+      const here = wake.getPointAtLength(at);
+      const back = wake.getPointAtLength(at - 1);
+      const angle = (Math.atan2(here.y - back.y, here.x - back.x) * 180) / Math.PI;
+      wake.style.strokeDashoffset = `${length - at}`;
+      ship.setAttribute('transform', `translate(${here.x.toFixed(1)} ${here.y.toFixed(1)}) rotate(${angle.toFixed(1)})`);
+    };
+
+    sail();
     window.addEventListener(
       'scroll',
       () => {
         if (!queued) {
           queued = true;
-          requestAnimationFrame(turn);
+          requestAnimationFrame(sail);
         }
       },
       { passive: true },
@@ -161,25 +186,51 @@ const toolbox = [
 <style>
   .intro {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--space-8);
     align-items: center;
   }
 
   .drawing {
     margin: 0;
-    padding: var(--space-5);
-    border: var(--hairline) solid var(--ink);
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 16px 16px;
   }
 
-  .drawing figcaption {
-    margin-top: var(--space-4);
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-3);
+    padding-left: 3%;
     font-family: var(--font-mono);
     color: var(--muted);
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .key {
+    width: 14px;
+    height: 10px;
+    border: 1px solid var(--ink);
+  }
+
+  .key-home {
+    background: var(--vermilion);
+  }
+
+  .key-work {
+    background: var(--paper);
+  }
+
+  .key-project {
+    background: repeating-linear-gradient(45deg, var(--ink) 0 1px, var(--paper) 1px 4px);
+  }
+
+  .fact-title-next {
+    margin-top: var(--space-6);
   }
 
   .bio {
@@ -329,8 +380,20 @@ const toolbox = [
       gap: var(--space-6);
     }
 
-    .drawing {
-      max-width: 26rem;
+    /* the line first, then the chart that illustrates it */
+    .bio {
+      order: -1;
+    }
+  }
+
+  /* on phones the chart keeps a readable size and scrolls sideways, like the case-study diagrams */
+  @media (max-width: 760px) {
+    .sea {
+      overflow-x: auto;
+    }
+
+    .sea :global(.diagram) {
+      min-width: 560px;
     }
   }
 </style>
