@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  // Final domain goes here once it's bought.
-  site: 'https://example.com',
+  // Free subdomain from is-a.dev, pointing at the Cloudflare Pages project (muhsinjifri.pages.dev).
+  site: 'https://muhsinjifri.is-a.dev',
 });

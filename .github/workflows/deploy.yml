@@ -1,0 +1,73 @@
+# Build, check, then deploy to Cloudflare Pages.
+# Pushes to main go to production; any other branch or PR gets its own preview URL.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # The site never names an employer, client or job title (the résumé PDF is the one exception).
+      - name: Confidentiality check
+        run: |
+          if grep -rIniE 'iqvia|lincole|burjeel|\bcto\b' src dist --exclude=resume.pdf; then
+            echo "::error::Confidential name found in the site. Remove it before deploying."
+            exit 1
+          fi
+
+      # Internal links only: LinkedIn and friends block bots, so external links would fail at random.
+      # /friday-deploy is the easter egg and is meant to 404.
+      - name: Link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --exclude 'friday-deploy' --root-dir "${{ github.workspace }}/dist" 'dist/**/*.html'
+          fail: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Fork PRs don't get secrets, so skip them instead of failing.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=muhsinjifri --branch=${{ github.head_ref || github.ref_name }}
