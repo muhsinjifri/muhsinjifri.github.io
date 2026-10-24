@@ -52,7 +52,7 @@ const toolbox = [
 ---
 
 <Section id="about" number="04" title="About" meta="Background">
-  <div class="intro">
+  <div class="intro cols">
     <figure class="drawing">
       <div class="sea">
         <SeaChart />
@@ -81,19 +81,22 @@ const toolbox = [
     </div>
   </div>
 
-  <ol class="principles" aria-label="How I work">
-    {
-      principles.map((p, i) => (
-        <li>
-          <span class="num micro">{String(i + 1).padStart(2, '0')} · Principle</span>
-          <h3>{p.title}</h3>
-          <p>{p.text}</p>
-        </li>
-      ))
-    }
-  </ol>
+  <section class="how" aria-labelledby="about-how">
+    <h3 class="group-title micro" id="about-how">How I work</h3>
+    <ol class="principles cols">
+      {
+        principles.map((p, i) => (
+          <li>
+            <span class="num micro">{String(i + 1).padStart(2, '0')}</span>
+            <h4>{p.title}</h4>
+            <p>{p.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 
-  <div class="facts">
+  <div class="facts cols">
     <section class="fact" aria-labelledby="about-certs">
       <h3 class="fact-title micro" id="about-certs">Certifications</h3>
       <ul class="certs">
@@ -121,12 +124,12 @@ const toolbox = [
 
       <h3 class="fact-title fact-title-next micro" id="about-lead">Off the keyboard</h3>
       <p class="edu-note">
-        Convenor of Ragam, a large college cultural festival: 200+ events, 30+ committees and 100+ student
-        leads to keep in step.
+        Convenor of Ragam’23, NIT Calicut’s annual cultural festival: 200+ events, 30+ committees and 100+
+        student leads to keep in step.
       </p>
     </section>
 
-    <section class="fact" aria-labelledby="about-tools">
+    <section class="fact fact-wide" aria-labelledby="about-tools">
       <h3 class="fact-title micro" id="about-tools">Toolbox</h3>
       <dl class="tools">
         {
@@ -184,15 +187,39 @@ const toolbox = [
 </script>
 
 <style>
-  .intro {
+  /*
+    One 4-column grid for the whole section, so the chart, the bio, the principles and the facts
+    all share the same vertical edges. It drops to 2 columns, then 1.
+  */
+  .cols {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--space-8);
-    align-items: center;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .intro {
+    align-items: start;
   }
 
   .drawing {
+    grid-column: span 2;
     margin: 0;
+  }
+
+  .bio {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .lead {
+    font-size: var(--step-2);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
   }
 
   .legend {
@@ -200,7 +227,6 @@ const toolbox = [
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-5);
     margin-top: var(--space-3);
-    padding-left: 3%;
     font-family: var(--font-mono);
     color: var(--muted);
   }
@@ -229,30 +255,27 @@ const toolbox = [
     background: repeating-linear-gradient(45deg, var(--ink) 0 1px, var(--paper) 1px 4px);
   }
 
-  .fact-title-next {
-    margin-top: var(--space-6);
+  /* group and fact labels: the same mono caps as the section meta */
+  .group-title,
+  .fact-title {
+    font-family: var(--font-mono);
+    font-weight: 400;
   }
 
-  .bio {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    max-width: 62ch;
+  .how {
+    margin-top: var(--space-8);
   }
 
-  .lead {
-    font-size: var(--step-2);
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--space-2);
+  /* heavy rule = a group (How I work, Certifications…); hairline = an item inside it */
+  .group-title {
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-5);
+    border-top: var(--rule);
   }
 
   .principles {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
-    gap: var(--space-6);
-    margin: var(--space-8) 0 0;
+    row-gap: var(--space-6);
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -263,9 +286,9 @@ const toolbox = [
     grid-row: span 3;
     grid-template-rows: subgrid;
     align-content: start;
-    gap: var(--space-3);
+    row-gap: var(--space-3);
     padding-top: var(--space-3);
-    border-top: var(--rule);
+    border-top: var(--hairline);
   }
 
   .num {
@@ -273,7 +296,8 @@ const toolbox = [
     color: var(--muted);
   }
 
-  .principles h3 {
+  .principles h4 {
+    margin: 0;
     font-size: var(--step-1);
     font-weight: 600;
     line-height: 1.15;
@@ -286,24 +310,28 @@ const toolbox = [
   }
 
   .facts {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
-    gap: var(--space-6);
+    row-gap: var(--space-7);
     margin-top: var(--space-8);
+  }
+
+  .fact-wide {
+    grid-column: span 2;
   }
 
   .fact-title {
     padding-top: var(--space-3);
     margin-bottom: var(--space-4);
     border-top: var(--rule);
-    font-family: var(--font-mono);
-    font-weight: 400;
+  }
+
+  .fact-title-next {
+    margin-top: var(--space-6);
   }
 
   .certs {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -312,7 +340,6 @@ const toolbox = [
   .certs li {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
   }
 
   .cert-name {
@@ -320,8 +347,12 @@ const toolbox = [
     line-height: 1.3;
   }
 
+  /* 44px tall so the verify links are easy to tap */
   .cert-meta {
     align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font-size: var(--step--2);
   }
 
@@ -340,7 +371,6 @@ const toolbox = [
   }
 
   .edu-note {
-    margin-top: var(--space-4);
     font-size: var(--step--1);
     line-height: 1.5;
   }
@@ -354,7 +384,7 @@ const toolbox = [
     grid-template-columns: 7.5rem 1fr;
     gap: var(--space-3);
     padding-block: var(--space-2);
-    border-bottom: var(--hairline) solid var(--line);
+    border-bottom: 1px solid var(--line);
     font-size: var(--step--1);
   }
 
@@ -374,15 +404,39 @@ const toolbox = [
     margin: 0;
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 1100px) {
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .drawing,
+    .bio {
+      grid-column: 1 / -1;
+    }
+
+    /* keep chart labels smaller than body text */
+    .drawing {
+      max-width: 40rem;
+    }
+
     .intro {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-6);
+      row-gap: var(--space-6);
     }
 
     /* the line first, then the chart that illustrates it */
     .bio {
       order: -1;
+      max-width: 62ch;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fact-wide {
+      grid-column: auto;
     }
   }
 
