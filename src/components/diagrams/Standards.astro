@@ -7,6 +7,9 @@ const standards = [
 ].map((s, i) => ({ ...s, y: 30 + i * 74 }));
 
 const teams = ['A', 'B', 'C'].map((t, i) => ({ label: `Team ${t}`, y: 30 + i * 74 }));
+
+// the baseline sits on the middle row's centre line, so the middle arrows run straight through it
+const MID = standards[1].y + 26;
 ---
 
 <svg
@@ -31,19 +34,19 @@ const teams = ['A', 'B', 'C'].map((t, i) => ({ label: `Team ${t}`, y: 30 + i * 7
         <rect x="10" y={s.y} width="196" height="52" class="dg-box"></rect>
         <text x="22" y={s.y + 22} class="dg-text dg-strong">{s.title}</text>
         <text x="22" y={s.y + 39} class="dg-text dg-small dg-muted">{s.sub}</text>
-        <path d={`M 206 ${s.y + 26} H 240 V 129 H 268`} class="dg-line" marker-end="url(#std-arrow)"></path>
+        <path d={`M 206 ${s.y + 26} H 240 V ${MID} H 268`} class="dg-line" marker-end="url(#std-arrow)"></path>
       </g>
     ))
   }
 
-  <rect x="270" y="98" width="140" height="62" class="dg-hot"></rect>
-  <text x="340" y="125" text-anchor="middle" class="dg-text dg-strong dg-on-hot">platform</text>
-  <text x="340" y="142" text-anchor="middle" class="dg-text dg-strong dg-on-hot">baseline</text>
+  <rect x="270" y={MID - 31} width="140" height="62" class="dg-hot"></rect>
+  <text x="340" y={MID - 4} text-anchor="middle" class="dg-text dg-strong dg-on-hot">platform</text>
+  <text x="340" y={MID + 13} text-anchor="middle" class="dg-text dg-strong dg-on-hot">baseline</text>
 
   {
     teams.map((t) => (
       <g>
-        <path d={`M 410 129 H 440 V ${t.y + 26} H 466`} class="dg-line dg-thin" marker-end="url(#std-arrow)"></path>
+        <path d={`M 410 ${MID} H 440 V ${t.y + 26} H 466`} class="dg-line dg-thin" marker-end="url(#std-arrow)"></path>
         <rect x="468" y={t.y} width="202" height="52" class="dg-box"></rect>
         <text x="480" y={t.y + 31} class="dg-text dg-strong">{t.label}</text>
         <rect x="548" y={t.y + 12} width="54" height="28" class="dg-box dg-thin"></rect>
