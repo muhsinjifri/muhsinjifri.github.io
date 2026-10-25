@@ -9,7 +9,7 @@ const email = 'muhsinjifri@gmail.com';
 const channels = [
   { label: 'LinkedIn', value: 'in/muhsinjifri', href: 'https://www.linkedin.com/in/muhsinjifri' },
   { label: 'GitHub', value: 'muhsinjifri', href: 'https://github.com/muhsinjifri' },
-  { label: 'Résumé', value: 'Download the PDF ↓', href: '/resume.pdf' },
+  { label: 'Résumé', value: 'Open the PDF ↗', href: '/resume.pdf' },
   { label: 'Based in · IST', value: 'Bengaluru, India' },
 ];
 ---
@@ -66,6 +66,7 @@ const channels = [
                 class="value"
                 href={c.href}
                 {...(c.href.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}
+                {...(c.href.endsWith('.pdf') && { target: '_blank', rel: 'noopener' })}
               >
                 {c.value}
               </a>
