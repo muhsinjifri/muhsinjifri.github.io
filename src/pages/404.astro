@@ -48,10 +48,9 @@ const strip = [
     </ul>
 
     <div class="scene" aria-hidden="true">
-      <span class="circle"></span>
       <p class="big">404</p>
 
-      <svg class="cone" viewBox="0 0 400 520">
+      <svg class="cone" viewBox="0 0 400 492">
         <defs>
           <linearGradient id="cone-body" x1="0" x2="1">
             <stop offset="0" stop-color="#f7956a"></stop>
@@ -68,10 +67,6 @@ const strip = [
             <stop offset="0.42" stop-color="#fff" stop-opacity="0"></stop>
             <stop offset="1" stop-color="#fff" stop-opacity="1"></stop>
           </linearGradient>
-          <radialGradient id="cone-shadow">
-            <stop offset="0" stop-color="#000" stop-opacity="0.32"></stop>
-            <stop offset="1" stop-color="#000" stop-opacity="0"></stop>
-          </radialGradient>
           <pattern id="cone-dots" width="6" height="6" patternUnits="userSpaceOnUse">
             <circle cx="3" cy="3" r="1.3" fill="#151311"></circle>
           </pattern>
@@ -83,7 +78,6 @@ const strip = [
           </clipPath>
         </defs>
 
-        <ellipse cx="230" cy="500" rx="230" ry="22" fill="url(#cone-shadow)"></ellipse>
         <!-- base slab in perspective -->
         <path d="M 78 412 L 322 412 L 392 474 L 8 474 Z" fill="#2a2623"></path>
         <rect x="8" y="474" width="384" height="18" fill="#151311"></rect>
@@ -108,10 +102,12 @@ const strip = [
 
 <style>
   .incident {
-    --big: min(40vw, 56svh);
+    /* scene is 1.26 × this tall; strip, gaps and message take the rest of one screen */
+    --big: min(36vw, 42svh);
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: auto 1fr auto;
+    /* strip, spacer, scene, message, spacer: the empty rows share the spare height, more of it above */
+    grid-template-rows: auto 1fr auto auto 0.5fr;
     column-gap: var(--space-6);
     min-height: 100svh;
     padding-block: var(--space-5) var(--space-6);
@@ -146,12 +142,14 @@ const strip = [
     font-size: var(--step--1);
   }
 
+  /* the cone stands on the floor: a heavy rule, like the one on top of the strip */
   .scene {
     grid-column: 1 / -1;
+    grid-row: 3;
     position: relative;
-    align-self: center;
-    height: calc(var(--big) * 1.02);
-    margin-block: var(--space-6) var(--space-4);
+    height: calc(var(--big) * 1.26);
+    margin-top: var(--space-6);
+    border-bottom: var(--rule);
   }
 
   .big {
@@ -169,25 +167,18 @@ const strip = [
   .cone {
     position: absolute;
     left: 50%;
-    bottom: calc(var(--big) * -0.24);
-    height: calc(var(--big) * 1.32);
+    bottom: 0;
+    height: calc(var(--big) * 1.25);
     width: auto;
     transform: translateX(-49%);
   }
 
-  .circle {
-    position: absolute;
-    left: 6%;
-    bottom: calc(var(--big) * -0.42);
-    width: calc(var(--big) * 0.82);
-    aspect-ratio: 1;
-    border: var(--hairline);
-    border-radius: 50%;
-  }
-
+  /* below the floor, on the strip's columns: the message under 1-2, the way out under 4 */
   .message {
     grid-column: 1 / span 2;
-    align-self: end;
+    grid-row: 4;
+    align-self: start;
+    padding-top: var(--space-5);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -208,8 +199,10 @@ const strip = [
 
   .home {
     grid-column: 3 / -1;
+    grid-row: 4;
     white-space: nowrap;
-    align-self: end;
+    align-self: start;
+    margin-top: var(--space-5);
     justify-self: end;
     position: relative;
     display: inline-flex;
@@ -224,6 +217,7 @@ const strip = [
     .incident {
       --big: 46vw;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto 1fr auto auto auto 0.6fr;
       row-gap: var(--space-4);
     }
 
@@ -232,13 +226,17 @@ const strip = [
     }
 
     .scene {
-      margin-block: var(--space-7) var(--space-7);
+      margin-top: var(--space-7);
     }
 
     .message,
     .home {
       grid-column: 1 / -1;
       justify-self: start;
+    }
+
+    .home {
+      grid-row: 5;
     }
   }
 </style>
