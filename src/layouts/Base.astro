@@ -20,19 +20,35 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#efe6d6" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1a1714" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#efe6d6" media="(prefers-color-scheme: light)" data-theme-color />
+    <meta name="theme-color" content="#1a1714" media="(prefers-color-scheme: dark)" data-theme-color />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <!-- Apply a saved theme before first paint so there's no flash. -->
     <script is:inline>
       try {
         const saved = localStorage.getItem('theme');
-        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.dataset.theme = saved;
+          // the phone's browser bar follows the chosen theme, not just the system one
+          const bar = saved === 'dark' ? '#1a1714' : '#efe6d6';
+          document.querySelectorAll('meta[data-theme-color]').forEach((m) => m.setAttribute('content', bar));
+        }
       } catch (_) {}
     </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
+    <script>
+      // Fade the right edge of a sideways-scrolling drawing while there is more of it to see.
+      const scrollers = document.querySelectorAll<HTMLElement>('.scroll-x');
+      const update = (el: HTMLElement) =>
+        el.classList.toggle('has-more', el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+      scrollers.forEach((el) => {
+        update(el);
+        el.addEventListener('scroll', () => update(el), { passive: true });
+      });
+      window.addEventListener('resize', () => scrollers.forEach(update));
+    </script>
   </body>
 </html>

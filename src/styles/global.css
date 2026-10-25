@@ -120,7 +120,10 @@ svg {
   left: var(--gutter);
   top: -100px;
   z-index: 200;
-  padding: var(--space-2) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
   background: var(--ink);
   color: var(--paper);
   font-family: var(--font-mono);
@@ -130,4 +133,40 @@ svg {
 
 .skip-link:focus {
   top: var(--space-3);
+}
+
+/*
+  Wide drawings on phones: rather than shrink their labels to nothing, they keep a readable size and
+  scroll sideways. While there is more to the right, the edge fades out (has-more is set in Base.astro),
+  and a small hint under the drawing says to swipe.
+*/
+.scroll-x {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-x.has-more {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+}
+
+.scroll-hint {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .scroll-hint {
+    display: block;
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
 }

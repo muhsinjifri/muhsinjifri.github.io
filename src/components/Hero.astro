@@ -431,6 +431,8 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
   @media (max-width: 760px) {
     .hero {
       --stage: min(92vw, 520px);
+      /* the drafting grid and the wheel's handles reach past the screen edge; clip them so the page can't pan sideways */
+      overflow-x: clip;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto auto auto;
       row-gap: var(--space-5);

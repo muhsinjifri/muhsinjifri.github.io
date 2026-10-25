@@ -62,7 +62,7 @@ const offClock = [
 <Section id="about" number="04" title="About" meta="Background">
   <div class="intro cols">
     <figure class="drawing">
-      <div class="sea">
+      <div class="sea scroll-x">
         <SeaChart />
       </div>
       <figcaption class="legend micro">
@@ -70,6 +70,7 @@ const offClock = [
         <span><i class="key key-work"></i>Charted at work</span>
         <span><i class="key key-project"></i>Charted on projects</span>
       </figcaption>
+      <p class="scroll-hint" aria-hidden="true">Swipe to see the whole chart →</p>
     </figure>
 
     <div class="bio">
@@ -476,12 +477,9 @@ const offClock = [
 
   /* on phones the chart keeps a readable size and scrolls sideways, like the case-study diagrams */
   @media (max-width: 760px) {
-    .sea {
-      overflow-x: auto;
-    }
-
     .sea :global(.diagram) {
-      min-width: 560px;
+      width: 602px;
+      max-width: none;
     }
   }
 </style>

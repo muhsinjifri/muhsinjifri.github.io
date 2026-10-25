@@ -48,7 +48,6 @@
     transition: transform 120ms ease;
   }
 
-  .red-button:hover svg,
   .red-button:focus-visible svg {
     transform: rotate(-12deg);
   }
@@ -84,10 +83,21 @@
       translate 160ms ease;
   }
 
-  .red-button:hover .tip,
   .red-button:focus-visible .tip {
     opacity: 1;
     translate: 0 0;
+  }
+
+  /* hover only where there is a real pointer; on touch screens a hover state sticks after the tap */
+  @media (hover: hover) {
+    .red-button:hover svg {
+      transform: rotate(-12deg);
+    }
+
+    .red-button:hover .tip {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

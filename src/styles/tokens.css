@@ -31,7 +31,7 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --font-display: 'Big Shoulders Variable', 'Arial Narrow', sans-serif;
 
-  --step--2: 0.6875rem;  /* 11px micro labels */
+  --step--2: 0.6875rem;  /* 11px micro labels (12px on phones, below) */
   --step--1: 0.8125rem;  /* 13px meta, tags */
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);   /* body */
   --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
@@ -93,4 +93,11 @@
   --grain-opacity: 0.12;
   --grain-blend: screen;
   color-scheme: dark;
+}
+
+/* Phones: micro labels go up to 12px; at arm's length 11px mono caps are hard to read. */
+@media (max-width: 760px) {
+  :root {
+    --step--2: 0.75rem;
+  }
 }

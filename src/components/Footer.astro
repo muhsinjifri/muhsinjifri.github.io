@@ -4,7 +4,7 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer wrap mono">
   <span>© {year} Sayed Muhsin Jifri</span>
-  <span>Steered by me, crewed by Claude · Astro · Bengaluru</span>
+  <span class="credits"><span class="nb">Steered by me, crewed by Claude</span><span class="sep"> · </span><span class="nb">Astro · Bengaluru</span></span>
 </footer>
 
 <style>
@@ -16,5 +16,27 @@ const year = new Date().getFullYear();
     padding-block: var(--space-6);
     font-size: var(--step--1);
     color: var(--muted);
+  }
+
+  .nb {
+    white-space: nowrap;
+  }
+
+  /* phones: one phrase per line, so no separator is left dangling at a line end */
+  @media (max-width: 760px) {
+    .site-footer,
+    .credits {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .site-footer {
+      gap: var(--space-3);
+    }
+
+    .sep {
+      display: none;
+    }
   }
 </style>

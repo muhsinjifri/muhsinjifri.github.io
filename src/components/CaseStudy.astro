@@ -30,10 +30,13 @@ const { number, kicker, title, stats, tags, caption } = Astro.props;
       <slot />
     </div>
     <figure>
-      <div class="drawing">
+      <div class="drawing scroll-x">
         <slot name="diagram" />
       </div>
-      <figcaption class="mono">Fig. {number}. {caption}</figcaption>
+      <figcaption class="mono">
+        Fig. {number}. {caption}
+        <span class="scroll-hint" aria-hidden="true">Swipe to see the whole drawing →</span>
+      </figcaption>
     </figure>
   </div>
 
@@ -133,6 +136,8 @@ const { number, kicker, title, stats, tags, caption } = Astro.props;
   .stat {
     display: flex;
     flex-direction: column-reverse;
+    /* in column-reverse, flex-end is the top: numbers line up even when labels differ in length */
+    justify-content: flex-end;
     gap: var(--space-1);
     padding-top: var(--space-3);
     border-top: var(--rule);
@@ -190,7 +195,7 @@ const { number, kicker, title, stats, tags, caption } = Astro.props;
     }
   }
 
-  /* Phone: one column; the drawing scrolls sideways rather than shrinking text to nothing. */
+  /* Phone: one column; the drawing keeps its drawn size (labels at 11px) and scrolls sideways. */
   @media (max-width: 760px) {
     .case {
       grid-template-columns: minmax(0, 1fr);
@@ -205,12 +210,9 @@ const { number, kicker, title, stats, tags, caption } = Astro.props;
       grid-column: 1;
     }
 
-    .drawing {
-      overflow-x: auto;
-    }
-
     .drawing :global(.diagram) {
-      min-width: 560px;
+      width: var(--drawn-width, 680px);
+      max-width: none;
     }
   }
 </style>
